@@ -6,6 +6,7 @@ import {
   TextInput,
   Modal,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Text, Button, Card, Divider, Portal } from "react-native-paper";
 import firestore from "@react-native-firebase/firestore";
@@ -20,14 +21,17 @@ const COLORS = {
   textGray: "rgba(255, 255, 255, 0.7)",
   headerBackground: "#293C7A",
   addButton: "#1C6034",
+  black:"#1b1b32",
+  lightGray: "#1E2D44",
 };
 
 const AddNotes = ({ navigation, route }) => {
-  const { notes = [], setNotes = () => {} } = route.params || {};
+  const { setNotes = () => {} } = route.params || {};
   const [modalVisible, setModalVisible] = useState(false);
   const [newNote, setNewNote] = useState({ title: "", description: "" });
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [notes, setNotesState] = useState([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -77,27 +81,98 @@ const AddNotes = ({ navigation, route }) => {
       }
     };
 
+    const fetchNotes = async () => {
+      try {
+        const uid = auth().currentUser?.uid;
+        if (!uid) {
+          Alert.alert("Error", "User not authenticated!");
+          return;
+        }
+
+        const notesSnapshot = await firestore()
+          .collection("users")
+          .doc("phone")
+          .collection(uid)
+          .doc("reminders")
+          .collection("notes")
+          .get();
+
+        const notesList = notesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setNotesState(notesList);
+        setNotes(notesList);
+      } catch (error) {
+        Alert.alert("Error", "Failed to fetch notes.");
+        console.error("Error fetching notes:", error);
+      }
+    };
+
     fetchUserData();
+    fetchNotes();
   }, [navigation]);
 
-  const handleAddNote = () => {
-    if (newNote.title && newNote.description) {
-      const newId = notes.length + 1;
-      const newNoteData = {
-        id: newId,
-        title: newNote.title,
-        description: newNote.description,
-        date: new Date().toLocaleDateString(),
+  const handleAddNote = async () => {
+    if (newNote.title.trim() && newNote.description.trim()) {
+      const uid = auth().currentUser?.uid;
+      if (!uid) {
+        Alert.alert("Error", "User not authenticated!");
+        return;
+      }
+  
+      const noteData = {
+        id: `${Date.now()}`, 
+        title: newNote.title.trim(),
+        description: newNote.description.trim(),
+        timestamp: firestore.FieldValue.serverTimestamp(),
       };
+  
+      try {
 
-      setNotes((prevNotes) => [...prevNotes, newNoteData]);
-
-      setNewNote({ title: "", description: "" });
-
-      setModalVisible(false);
+        const noteRef = await firestore()
+          .collection("users")
+          .doc("phone")
+          .collection(uid)
+          .doc("reminders")
+          .collection("notes")
+          .doc(noteData.id)
+          .set(noteData);
+  
+ 
+        const addedNoteDoc = await firestore()
+          .collection("users")
+          .doc("phone")
+          .collection(uid)
+          .doc("reminders")
+          .collection("notes")
+          .doc(noteData.id)
+          .get();
+  
+        if (addedNoteDoc.exists) {
+          const addedNote = addedNoteDoc.data();
+          const noteWithDate = {
+            id: addedNoteDoc.id,
+            ...addedNote,
+            date: addedNote?.timestamp?.toDate().toLocaleDateString(), // Convert timestamp to readable date
+          };
+  
+          setNotesState((prevNotes) => [...prevNotes, noteWithDate]);
+          setNotes((prevNotes) => [...prevNotes, noteWithDate]);
+        }
+  
+        setNewNote({ title: "", description: "" });
+        setModalVisible(false);
+      } catch (error) {
+        console.error("Error adding note to Firestore:", error);
+        Alert.alert("Error", "Failed to add note.");
+      }
+    } else {
+      Alert.alert("Validation Error", "Both title and description are required.");
     }
   };
-
+  
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -135,21 +210,18 @@ const AddNotes = ({ navigation, route }) => {
             <Card.Content>
               <Text style={styles.noteTitle}>{note.title}</Text>
               <Text style={styles.noteDescription}>{note.description}</Text>
-              <Text style={styles.noteDate}>Added Manually {note.date}</Text>
+              <Text style={styles.noteDate}>Added on {note.date}</Text>
             </Card.Content>
           </Card>
         ))}
       </ScrollView>
 
-      <Button
-        mode="contained"
-        buttonColor={COLORS.blue}
-        textColor="#fff"
+      <TouchableOpacity
         style={styles.addButton}
         onPress={() => setModalVisible(true)}
       >
-        Add More
-      </Button>
+        <Text style={styles.addButtonText}>Add Note</Text>
+      </TouchableOpacity>
 
       <Portal>
         <Modal
@@ -164,7 +236,7 @@ const AddNotes = ({ navigation, route }) => {
                 <Text style={styles.modalTitle}>Add Note</Text>
                 <TextInput
                   placeholder="Note Title"
-                  placeholderTextColor={COLORS.textGray}
+                  placeholderTextColor={COLORS.black}
                   style={styles.input}
                   value={newNote.title}
                   onChangeText={(text) =>
@@ -173,7 +245,7 @@ const AddNotes = ({ navigation, route }) => {
                 />
                 <TextInput
                   placeholder="Note Description"
-                  placeholderTextColor={COLORS.textGray}
+                  placeholderTextColor={COLORS.bl}
                   style={[styles.input, styles.textArea]}
                   value={newNote.description}
                   multiline
@@ -193,7 +265,7 @@ const AddNotes = ({ navigation, route }) => {
                   <Button
                     mode="contained"
                     buttonColor={COLORS.blue}
-                    textColor="#000"
+                    textColor="#fff"
                     onPress={handleAddNote}
                   >
                     Add Note
@@ -215,7 +287,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    backgroundColor: COLORS.headerBackground,
+    backgroundColor: COLORS.textGray,
     padding: 20,
     borderRadius: 12,
     marginBottom: 20,
@@ -226,25 +298,28 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
-    color: COLORS.accent,
-    marginBottom: 10,
-    textAlign: "center", 
+    color: COLORS.black,
+    marginBottom: 6,
+    fontFamily:"monospace",
+    textAlign: "center",
   },
   headerDivider: {
     height: 1,
-    backgroundColor: COLORS.accent,
+    backgroundColor: COLORS.white,
     marginVertical: 10,
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
+    marginBottom: 8,
+    marginLeft:5,
   },
   infoText: {
-    color: COLORS.textGray,
-    fontSize: 16, 
+    color: COLORS.black,
+    fontSize: 17,
+    fontWeight:"semibold",
   },
   infoValue: {
     color: COLORS.white,
@@ -259,6 +334,82 @@ const styles = StyleSheet.create({
   loaderText: {
     color: COLORS.accent,
     fontSize: 18,
+  },
+  card: {
+    backgroundColor: COLORS.blue,
+    marginBottom: 18,
+    borderRadius: 10,
+    borderWidth: 0.80,
+    padding:5,
+    borderColor: COLORS.white,
+  },
+  noteTitle: {
+    fontSize: 20,
+    color: COLORS.accent,
+    fontWeight: "bold",
+    fontFamily:"sans-serif",
+  },
+  noteDescription: {
+    fontSize: 16,
+    color: COLORS.black,
+    marginTop: 10,
+  },
+  noteDate: {
+    fontSize: 13,
+    color: COLORS.textGray,
+    marginTop: 5,
+  },
+  addButton: {
+    backgroundColor: COLORS.lightGray,
+    padding: 15,
+    width:370,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+  },
+  addButtonText: {
+    color: COLORS.white,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.modalBackground,
+  },
+  modalCard: {
+    width: "91%",
+    backgroundColor: COLORS.lightGray,
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color:COLORS.white,
+    marginBottom: 22,
+    textAlign: "center",
+    fontFamily:"monospace",
+  },
+  input: {
+    backgroundColor: "#F0F0F0",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: "top",
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
   },
 });
 

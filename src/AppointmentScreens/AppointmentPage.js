@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const NlpSummarizer = () => {
+const AppointmentPage = () => {
   return (
     <View>
-      <Text>NlpSummarizer</Text>
+      <Text>AppointmentPage</Text>
     </View>
   )
 }
 
-export default NlpSummarizer
+export default AppointmentPage

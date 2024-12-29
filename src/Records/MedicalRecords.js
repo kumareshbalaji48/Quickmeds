@@ -1,23 +1,19 @@
-import React from "react";
-import { View, StyleSheet,StatusBar, TouchableOpacity, Image, Text } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { onLog } from "@react-native-firebase/app";
+import React, { useState, useEffect } from "react";
+import { 
+  View, 
+  StyleSheet, 
+  StatusBar, 
+  TouchableOpacity, 
+  Image, 
+  Text 
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
-  gray: "#2A2A2A",
   blue: "#4F73DF",
-  green: "#157A6E",
-  red: "#B53737",
-  cardBlue: "#293C7A",
-  cardGreen: "#1C6034",
-  cardRed: "#5A2E2E",
-  cardOrange: "#D45C16",
-  lightGray: "#1E2D44",
-  transparentWhite: "rgba(255, 255, 255, 0.7)", 
 };
-
 
 const MedicalRecords = () => {
   const navigation = useNavigation();
@@ -25,14 +21,15 @@ const MedicalRecords = () => {
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={COLORS.primary} />
-      <View style={{borderBottomColor:COLORS.white,
-    borderBottomWidth:1,}}>
-      <Text style={styles.title}>Medical Records</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Medical Records</Text>
       </View>
       <View style={styles.optionsContainer}>
         <TouchableOpacity
           style={styles.optionButton}
-          onPress={() => navigation.navigate("AddNotes")}
+          onPress={() =>
+            navigation.navigate("AddNotes")
+          }
         >
           <Image
             source={require("../../assets/images/reportssection/notes.png")}
@@ -60,34 +57,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
+    justifyContent: "flex-start",
     alignItems: "center",
-    justifyContent:"center",
   },
-  
+  header: {
+    borderBottomColor: COLORS.white,
+    borderBottomWidth: 1,
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 20,
+  },
   title: {
-    marginTop:25,
+    marginTop: 25,
     fontSize: 26,
     fontWeight: "bold",
     color: COLORS.white,
-    marginBottom: 0,
-    fontFamily:"monospace",
-    
+    paddingBottom: 10,
   },
   optionsContainer: {
     flex: 1,
+    flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
-    flexDirection: "row",
     width: "100%",
   },
   optionButton: {
     backgroundColor: COLORS.blue,
-    padding: 25,
-    borderRadius: 20,
+    padding: 20,
+    borderRadius: 15,
     alignItems: "center",
-    width: 150,
-    height:150,
+    justifyContent: "center",
+    width: 140,
+    height: 140,
   },
   optionIcon: {
     width: 60,
@@ -97,7 +99,8 @@ const styles = StyleSheet.create({
   optionText: {
     color: COLORS.white,
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 15,
+    textAlign: "center",
   },
 });
 

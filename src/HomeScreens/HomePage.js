@@ -30,15 +30,15 @@ const COLORS = {
   transparentWhite: "rgba(255, 255, 255, 0.7)",
 };
 
-export default function HomePage({ navigation, hospitalid }) {
+export default function HomePage({ navigation }) {
   const [username, setUsername] = useState("User");
   const [reminders, setReminders] = useState([]);
 
-  // Fetch username and other initial data
+  
   useEffect(() => {
     const fetchUsername = async () => {
       const user = auth().currentUser;
-    
+
       if (user) {
         try {
           const phoneDoc = await firestore()
@@ -47,19 +47,19 @@ export default function HomePage({ navigation, hospitalid }) {
             .collection(user.uid)
             .doc("details")
             .get();
-    
+
           if (phoneDoc.exists) {
             setUsername(phoneDoc.data().name || "User");
             return;
           }
-    
+
           const hospitalSnapshot = await firestore()
             .collection("users")
             .doc("hospital")
             .collection("uid")
-            .where("uid", "==", user.uid) 
-            .get(); 
-    
+            .where("uid", "==", user.uid)
+            .get();
+
           if (!hospitalSnapshot.empty) {
             hospitalSnapshot.forEach((doc) => {
               const hospitalData = doc.data();
@@ -72,7 +72,6 @@ export default function HomePage({ navigation, hospitalid }) {
           } else {
             setUsername("User");
           }
-    
         } catch (error) {
           console.error("Error fetching username:", error);
         }
@@ -82,27 +81,49 @@ export default function HomePage({ navigation, hospitalid }) {
     fetchUsername();
   }, []);
 
-  // Fetch reminders from Firestore
+  
   useEffect(() => {
-    const reminderData = [
-      {
-        id: "1",
-        type: "appointment",
-        title: "Appointment with Dr. Stone",
-        date: "Wed, 10 Jan 2024",
-        time: "11:00 AM",
-        doctorImage: require("../../assets/images/Homepage/image.png"),
-      },
-      {
-        id: "2",
-        type: "note",
-        title: "Take medicine at night",
-        content: "Don't forget to take your blood pressure medicine tonight.",
-      },
-    ];
-    setReminders(reminderData);
+    const fetchReminders = async () => {
+      const user = auth().currentUser;
+      if (!user) return;
+
+      try {
+        const notesCollection = firestore()
+          .collection("users")
+          .doc("phone")
+          .collection(user.uid)
+          .doc("reminders")
+          .collection("notes");
+
+        const notesSnapshot = await notesCollection.get();
+        const fetchedNotes = notesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          title: doc.data().title,
+          content: doc.data().description,
+          type:"note",
+        }));
+
+        
+        const appointmentReminder = {
+          id: "1",
+          type: "appointment",
+          title: "Appointment with Dr. Stone",
+          date: "Wed, 10 Jan 2024",
+          time: "11:00 AM",
+          doctorImage: require("../../assets/images/Homepage/image.png"),
+        };
+
+        
+        setReminders([appointmentReminder, ...fetchedNotes]);
+      } catch (error) {
+        console.error("Error fetching reminders:", error);
+      }
+    };
+
+    fetchReminders();
   }, []);
 
+  
   const renderReminder = ({ item }) => {
     if (item.type === "appointment") {
       return (
@@ -142,13 +163,7 @@ export default function HomePage({ navigation, hospitalid }) {
     return null;
   };
 
-  const addNewNote = (note) => {
-    setReminders((prevReminders) => [
-      ...prevReminders,
-      { id: String(prevReminders.length + 1), type: "note", ...note },
-    ]);
-  };
-
+  
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={COLORS.primary} />
@@ -230,7 +245,7 @@ export default function HomePage({ navigation, hospitalid }) {
         />
       </View>
 
-      {/* Add Notes Button */}
+      
       <TouchableOpacity
         style={styles.addNoteButton}
         onPress={() =>
@@ -239,11 +254,10 @@ export default function HomePage({ navigation, hospitalid }) {
       >
         <Text style={styles.addNoteButtonText}>Add Reminders</Text>
       </TouchableOpacity>
-
-      
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -257,14 +271,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 36,
     paddingBottom: 15,
-    borderBottomColor:COLORS.transparentWhite,
-    borderWidth:1,
+    borderBottomColor: COLORS.transparentWhite,
+    borderWidth: 1,
   },
   greeting: {
     fontSize: 26,
     fontWeight: "bold",
     color: COLORS.white,
-    fontFamily:"monospace"
+    fontFamily: "monospace",
   },
   subGreeting: {
     fontSize: 15,
@@ -282,7 +296,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
     marginBottom: 14,
-    
   },
   card: {
     width: width * 0.44,
@@ -290,29 +303,26 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     marginBottom: 20,
-    elevation:8,
+    elevation: 8,
     borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
-    overflow: 'hidden',
-     
-    
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    overflow: "hidden",
   },
   cardIcon: {
     width: 35,
     height: 35,
     marginBottom: 12,
-    
   },
   cardTitle: {
     fontSize: 17,
     fontWeight: "bold",
     color: COLORS.white,
-    fontFamily:"sans-serif"
+    fontFamily: "sans-serif",
   },
   cardSubtitle: {
     fontSize: 12,
-    color: COLORS.transparentWhite, 
-    fontFamily:"serif"
+    color: COLORS.transparentWhite,
+    fontFamily: "serif",
   },
   reminderSection: {
     marginTop: 10,
@@ -321,8 +331,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: COLORS.white,
-    marginBottom:15,
-    fontFamily:"monospace",
+    marginBottom: 15,
+    fontFamily: "monospace",
   },
   reminderCard: {
     backgroundColor: COLORS.blue,
@@ -334,8 +344,8 @@ const styles = StyleSheet.create({
     width: width * 0.8,
     height: 130,
     borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
-    overflow: 'hidden',
+    borderColor: "rgba(255, 255, 255, 0.4)",
+    overflow: "hidden",
   },
   doctorImage: {
     width: 50,
@@ -345,56 +355,36 @@ const styles = StyleSheet.create({
   },
   reminderContent: {
     flex: 1,
-    
   },
   reminderTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: COLORS.white,
-    fontFamily:"sans-serif",
-    
+    fontFamily: "sans-serif",
   },
   reminderDetails: {
     fontSize: 11,
     color: COLORS.transparentWhite,
-    fontFamily:"serif",
+    fontFamily: "serif",
   },
   reminderNote: {
     fontSize: 11,
     color: COLORS.white,
-    fontFamily:"serif",
+    fontFamily: "serif",
   },
   reminderDetailsContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
     marginTop: 4,
   },
   iconTextContainer: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
   },
   smallIcon: {
     width: 16,
     height: 16,
-    marginRight: 4, 
-    
-  },
-  footerContainer: {
-    marginTop: 30,
-    alignItems: "center",
-  },
-  helpButton: {
-    backgroundColor: COLORS.blue,
-    paddingHorizontal: 125,
-    paddingVertical: 10,
-    borderRadius: 10,
-    width:370,
-    height:40,
-  },
-  helpButtonText: {
-    fontSize: 16,
-    color: COLORS.white,
-    fontWeight: "bold",
+    marginRight: 4,
   },
   addNoteButton: {
     backgroundColor: COLORS.lightGray,
@@ -409,5 +399,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.white,
   },
-  
 });

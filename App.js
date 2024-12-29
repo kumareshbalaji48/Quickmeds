@@ -17,12 +17,14 @@ import HomePage from './src/HomeScreens/HomePage.js';
 import BillStatements from './src/BillStatements.js';
 import BookAppointments from './src/BookAppointments.js';
 import MedicalRecords from './src/Records/MedicalRecords.js';
-import NlpSummarizer from './src/NlpSummarizer.js';
+import NlpSummarizer from './src/NlpScreens/NlpSummarizer.js';
+import Process from './src/NlpScreens/Process.js';
 import Profile from './src/ProfileScreens/Profile.js';
 import AddDetails from './src/ProfileScreens/AddDetails.js';
 import AddNotes from './src/Records/AddNotes.js';
 import Reports from './src/Records/Reports.js';
 import Test from './src/Records/Test.js';
+import AppointmentPage from './src/AppointmentScreens/AppointmentPage.js';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
@@ -78,6 +80,8 @@ const App = () => {
           <Stack.Screen name="Reports" component={Reports} options={{headerShown: false}} />
           <Stack.Screen name="AddNotes" component={AddNotes} options={{headerShown: false}} />
           <Stack.Screen name="Test" component={Test} options={{headerShown: false}} />
+          <Stack.Screen name="AppointmentPage" component={AppointmentPage} options={{headerShown: false}} />
+          <Stack.Screen name="Process" component={Process} options={{headerShown: false}} />
         </Stack.Navigator>
       </NavigationContainer>
       

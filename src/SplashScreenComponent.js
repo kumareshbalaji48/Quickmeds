@@ -21,9 +21,9 @@ export default function SplashScreenComponent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between', // Space between logo and text
+    justifyContent: 'space-between', 
     alignItems: 'center',
-    backgroundColor: '#0A2463', // Match your splash screen background color
+    backgroundColor: '#0A2463', 
   },
   logoContainer: {
     flex: 1,
@@ -39,20 +39,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight :500,
     fontSize: 18,
-    fontFamily: 'system-ui', // Ensure this font is supported
-    textAlign: 'center', // Center-align text
+    fontFamily: 'system-ui', 
+    textAlign: 'center', 
   },
   subtext:{
     color: '#fff',
     fontWeight :200,
     fontSize: 12,
-    fontFamily: 'system-ui', // Ensure this font is supported
+    fontFamily: 'system-ui',
     textAlign: 'center',
 
   },
   image: {
-    width: 75, // Adjust the width of the logo
-    height: 75, // Adjust the height of the logo
+    width: 75, 
+    height: 75, 
     resizeMode: 'cover',
   },
 });

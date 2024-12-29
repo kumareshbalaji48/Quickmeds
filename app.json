@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kumareshbalaji11.quickmeds"
+      "bundleIdentifier": "com.kumareshbalaji11.quickmeds",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to calculate proximity to the hospital."
+      }
     },
     "splash": {
       "image": "./assets/images/quickmeds.png",
@@ -23,7 +26,11 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.kumareshbalaji11.quickmeds",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -35,7 +42,10 @@
       [
         "@react-native-firebase/app",
         "@react-native-firebase/auth"
-      ]
+      ],
+      "expo-location",
+      "expo-document-picker",
+      "expo-file-system"
     ],
     "experiments": {
       "typedRoutes": true

@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.primary,
     padding: 20,
+    
   },
   header: {
     color: COLORS.white,
@@ -132,6 +133,7 @@ const styles = StyleSheet.create({
     fontWeight:"bold",
     borderBottomColor:COLORS.white,
     borderBottomWidth:1,
+    
   },
   sortContainer: {
     flexDirection: "row",
