@@ -11,7 +11,7 @@ import { Text, Button, Card, IconButton } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 
 const COLORS = {
-  primary: "#0A1128",
+  primary: "#020E22",
   white: "#FFFFFF",
   gray: "#2A2A2A",
   blue: "#1849D6",
@@ -70,7 +70,7 @@ const NlpSummarizer = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header} >
-      <Text style={{fontFamily:"monospace",fontWeight:"bold",fontSize:28,color:COLORS.white,marginBottom:10,textAlign: "center"}}>NLP Summarizer</Text>
+      <Text style={{fontFamily:"monospace",fontWeight:"bold",fontSize:28,color:COLORS.white,marginBottom:10,textAlign: "center",}}>NLP Summarizer</Text>
       </View>
       
       <Card style={styles.card}>
