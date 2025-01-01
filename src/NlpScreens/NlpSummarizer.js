@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    marginBottom: 110,
+    marginBottom: 70,
     borderBottomColor: COLORS.transparentWhite,
     borderWidth: 1,
   },

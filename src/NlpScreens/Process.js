@@ -1,3 +1,4 @@
+/*
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator, Alert, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
@@ -82,3 +83,4 @@ const styles = StyleSheet.create({
 });
 
 export default Process;
+*/

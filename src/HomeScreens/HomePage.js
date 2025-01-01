@@ -19,13 +19,14 @@ const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
   gray: "#2A2A2A",
-  blue: "#43599D",
+  blue: "#4F73DF",
   green: "#157A6E",
   red: "#B53737",
+  accent: "#0FEDED",
   cardBlue: "#293C7A",
-  cardGreen: "#1C6034",
-  cardRed: "#5A2E2E",
-  cardOrange: "#D45C16",
+  cardGreen: "#084C2E",
+  cardRed: "#7A271A",
+  cardOrange: "#772917",
   lightGray: "#1E2D44",
   transparentWhite: "rgba(255, 255, 255, 0.7)",
 };
@@ -277,7 +278,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 26,
     fontWeight: "bold",
-    color: COLORS.white,
+    color: COLORS.accent,
     fontFamily: "monospace",
   },
   subGreeting: {

@@ -122,11 +122,12 @@ const generatePDF = async () => {
   try {
     
     const { uri } = await Print.printToFileAsync({ html });
-    
+    await Sharing.shareAsync(uri);
     
     await Sharing.shareAsync(uri);
   } catch (error) {
     console.error("Error generating PDF:", error);
+    alert("Failed to generate or share the PDF. Please try again.");
   }
 };
 
@@ -165,8 +166,10 @@ const Test = () => {
           textColor="#000"
           onPress={showModal}
           style={styles.generateButton}
+          accessibilityLabel="Preview the generated PDF document"
         >
-          Preview PDF
+
+        <Text style={{ color: "#000" }}>Preview PDF</Text>
         </Button>
 
         <Button
@@ -176,7 +179,7 @@ const Test = () => {
           onPress={generatePDF}
           style={styles.generateButton}
         >
-          Generate PDF
+          <Text style={{ color: "#000" }}>Generate PDF</Text>
         </Button>
 
         <Portal>
@@ -184,6 +187,7 @@ const Test = () => {
             visible={visible}
             onDismiss={hideModal}
             contentContainerStyle={styles.modalContainer}
+            accessibilityLabel="PDF preview modal"
           >
             <WebView
               originWhitelist={["*"]}
@@ -262,6 +266,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderRadius: 10,
     overflow: "hidden",
+    padding: 15,
+    maxHeight: "90%",
   },
   closeButton: {
     margin: 10,

@@ -35,7 +35,7 @@ const MedicalRecords = () => {
             source={require("../../assets/images/reportssection/notes.png")}
             style={styles.optionIcon}
           />
-          <Text style={styles.optionText}>Add Notes</Text>
+          <Text style={styles.optionText}>Add Reminders</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
