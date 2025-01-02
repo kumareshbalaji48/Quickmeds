@@ -219,7 +219,7 @@ export default function HomePage({ navigation }) {
             style={styles.cardIcon}
           />
           <Text style={styles.cardTitle}>Report Summarizer</Text>
-          <Text style={styles.cardSubtitle}>NLP based</Text>
+          <Text style={styles.cardSubtitle}>Summarizer</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

@@ -26,6 +26,14 @@ import Reports from './src/Records/Reports.js';
 import Test from './src/Records/Test.js';
 import AppointmentPage from './src/AppointmentScreens/AppointmentPage.js';
 import BillPdf from './src/BillScreens/BillPdf.js';
+import Result from './src/NlpScreens/Result.js';
+
+import { Buffer } from 'buffer';
+global.Buffer = Buffer;
+
+import process from 'process';
+global.process = process;
+
 
 const Stack = createNativeStackNavigator();
 
@@ -84,7 +92,8 @@ const App = () => {
           <Stack.Screen name="Test" component={Test} options={{headerShown: false}} />
           <Stack.Screen name="AppointmentPage" component={AppointmentPage} options={{headerShown: false}} />
           <Stack.Screen name="BillPdf" component={BillPdf} options={{headerShown: false}} />
-          
+          <Stack.Screen name="Process" component={Process} options={{headerShown: false}} />
+          <Stack.Screen name="Result" component={Result} options={{headerShown: false}} />
         </Stack.Navigator>
       </NavigationContainer>
       

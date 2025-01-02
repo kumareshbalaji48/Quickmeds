@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Text, Button, Card, IconButton } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
-
+import { useNavigation, useRoute } from "@react-navigation/native";
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
@@ -26,23 +26,44 @@ const NlpSummarizer = () => {
   const [file, setFile] = useState(null);
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigation = useNavigation();
   const handleFileUpload = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         type: "application/pdf",
       });
-
-      if (result.type === "success") {
-        setFile(result);
+  
+      console.log("DocumentPicker Result:", result);
+  
+      if (result.canceled) {
+        Alert.alert("Upload Cancelled", "No file was selected.");
+        return;
+      }
+  
+      // Ensure assets exist and access the first file
+      if (result.assets && result.assets.length > 0) {
+        const selectedFile = result.assets[0];
+  
+        if (selectedFile.mimeType === "application/pdf") {
+          setFile(selectedFile); // Set the file in state
+          Alert.alert("Success", `PDF file "${selectedFile.name}" uploaded successfully.`);
+        } else {
+          Alert.alert("Error", "The selected file is not a valid PDF.");
+        }
       } else {
-        Alert.alert("Upload Cancelled", "Please upload a valid PDF file.");
+        Alert.alert("Error", "No valid file found in the selection.");
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Something went wrong while uploading the file.");
+      console.error("File Upload Error:", error);
+      Alert.alert("Error", "An error occurred while selecting the file.");
     }
   };
+  
+  
+  
+  
+  
+  
 
   const handleUrlUpload = () => {
     if (!url) {
