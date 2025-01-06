@@ -36,7 +36,7 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 const BookAppointments = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [distance, setDistance] = useState(null);
-  const hospitalLocation = { latitude: 12.934097472603401, longitude: 77.69275662471937 }; // Replace with hospital location
+  const hospitalLocation = { latitude: 13.027887119124816, longitude: 13.027887119124816 }; // Replace with hospital location
   const proximityThreshold = 5;
 
   useEffect(() => {

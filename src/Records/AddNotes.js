@@ -37,21 +37,30 @@ const AddNotes = ({ navigation, route }) => {
     const fetchUserData = async () => {
       try {
         const uid = auth().currentUser?.uid;
-
+    
         if (!uid) {
           console.log("No user ID available!");
           navigation.replace("AddDetails");
           return;
         }
-
+    
         const currentUser = auth().currentUser;
         const isHospitalUser = currentUser?.email?.includes("@hospital.com");
         const hospitalId = isHospitalUser ? currentUser?.email.split("@")[0] : null;
-
-        let userDoc;
-
+    
+        let aboutDoc, detailsDoc;
+    
         if (isHospitalUser && hospitalId) {
-          userDoc = await firestore()
+          aboutDoc = await firestore()
+            .collection("users")
+            .doc("hospital")
+            .collection("uid")
+            .doc(hospitalId)
+            .collection("about")
+            .doc(uid)
+            .get();
+    
+          detailsDoc = await firestore()
             .collection("users")
             .doc("hospital")
             .collection("uid")
@@ -60,16 +69,30 @@ const AddNotes = ({ navigation, route }) => {
             .doc(uid)
             .get();
         } else {
-          userDoc = await firestore()
+          aboutDoc = await firestore()
+            .collection("users")
+            .doc("phone")
+            .collection(uid)
+            .doc("about")
+            .get();
+    
+          detailsDoc = await firestore()
             .collection("users")
             .doc("phone")
             .collection(uid)
             .doc("details")
             .get();
         }
-
-        if (userDoc.exists) {
-          setUserDetails(userDoc.data());
+    
+        if (aboutDoc.exists || detailsDoc.exists) {
+          const aboutData = aboutDoc.exists ? aboutDoc.data() : {};
+          const detailsData = detailsDoc.exists ? detailsDoc.data() : {};
+    
+          
+          setUserDetails({
+            ...detailsData,
+            name: aboutData.name || "N/A", 
+          });
         } else {
           console.log("No user data found! Redirecting to Add Details page.");
           navigation.replace("AddDetails");
@@ -80,7 +103,7 @@ const AddNotes = ({ navigation, route }) => {
         setLoading(false);
       }
     };
-
+    
     const fetchNotes = async () => {
       try {
         const uid = auth().currentUser?.uid;
@@ -88,7 +111,7 @@ const AddNotes = ({ navigation, route }) => {
           Alert.alert("Error", "User not authenticated!");
           return;
         }
-
+    
         const notesSnapshot = await firestore()
           .collection("users")
           .doc("phone")
@@ -96,12 +119,16 @@ const AddNotes = ({ navigation, route }) => {
           .doc("reminders")
           .collection("notes")
           .get();
-
-        const notesList = notesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
+    
+        const notesList = notesSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            date: data.timestamp?.toDate().toLocaleDateString(), // Convert timestamp to readable date
+          };
+        });
+    
         setNotesState(notesList);
         setNotes(notesList);
       } catch (error) {
@@ -109,6 +136,7 @@ const AddNotes = ({ navigation, route }) => {
         console.error("Error fetching notes:", error);
       }
     };
+    
 
     fetchUserData();
     fetchNotes();
@@ -126,12 +154,12 @@ const AddNotes = ({ navigation, route }) => {
         id: `${Date.now()}`, 
         title: newNote.title.trim(),
         description: newNote.description.trim(),
-        timestamp: firestore.FieldValue.serverTimestamp(),
+        timestamp: firestore.Timestamp.now(), 
       };
   
       try {
-
-        const noteRef = await firestore()
+        
+        await firestore()
           .collection("users")
           .doc("phone")
           .collection(uid)
@@ -140,7 +168,7 @@ const AddNotes = ({ navigation, route }) => {
           .doc(noteData.id)
           .set(noteData);
   
- 
+
         const addedNoteDoc = await firestore()
           .collection("users")
           .doc("phone")
@@ -155,7 +183,7 @@ const AddNotes = ({ navigation, route }) => {
           const noteWithDate = {
             id: addedNoteDoc.id,
             ...addedNote,
-            date: addedNote?.timestamp?.toDate().toLocaleDateString(), // Convert timestamp to readable date
+            date: addedNote.timestamp.toDate().toLocaleDateString(), 
           };
   
           setNotesState((prevNotes) => [...prevNotes, noteWithDate]);
@@ -172,6 +200,7 @@ const AddNotes = ({ navigation, route }) => {
       Alert.alert("Validation Error", "Both title and description are required.");
     }
   };
+  
   
   if (loading) {
     return (

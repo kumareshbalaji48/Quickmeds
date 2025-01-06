@@ -15,7 +15,7 @@ const { width, height } = Dimensions.get("window");
 const COLORS = { primary: "#020E22", white: "#fff", blue: "#4F73DF", gray: "#2A2A2A" };
 
 export default function RegisterPhone({ route, navigation }) {
-  const { uid } = route.params; 
+  const { uid } = route.params;
   const [name, setName] = useState("");
   const [hospitalid, setHospitalid] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,8 +23,8 @@ export default function RegisterPhone({ route, navigation }) {
   const checkHospitalIdExists = async (hospitalid) => {
     try {
       const snapshot = await firestore()
-        .collection("users") 
-        .where("hospitalid", "==", hospitalid) 
+        .collection("users")
+        .where("hospitalid", "==", hospitalid)
         .get();
 
       return !snapshot.empty;
@@ -51,16 +51,22 @@ export default function RegisterPhone({ route, navigation }) {
         return;
       }
 
-      
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const year = String(now.getFullYear()).slice(-2); // Get the last two digits of the year
+    const joinDate = `${day}-${month}-${year}`;
+
       await firestore()
         .collection("users")
-        .doc("phone") 
-        .collection(uid) 
-        .doc("details") 
+        .doc("phone")
+        .collection(uid)
+        .doc("about")
         .set({
           name,
           hospitalid,
           uid,
+          joinDate, // Add the joinDate field
         });
 
       Alert.alert("Success", "Registration completed successfully!");

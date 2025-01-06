@@ -16,6 +16,7 @@ const COLORS = {
   gray: "#2A2A2A",
   blue: "#1849D6",
   green: "#157A6E",
+  textGray: "rgba(255, 255, 255, 0.7)",
   red: "#B53737",
   cardBackground: "#1E293B",
   lightGray: "#64748B",
@@ -134,7 +135,7 @@ const NlpSummarizer = () => {
           <TextInput
             style={styles.input}
             placeholder="Enter file URL..."
-            placeholderTextColor={COLORS.lightGray}
+            placeholderTextColor={COLORS.transparentWhite}
             value={url}
             onChangeText={(text) => setUrl(text)}
           />
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   card: {
-    backgroundColor: COLORS.cardBackground,
+    backgroundColor: COLORS.textGray,
     borderRadius: 15,
     padding: 15,
     marginBottom:30,
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 18,
-    color: COLORS.transparentWhite,
+    color: COLORS.black,
     marginBottom: 20,
     textAlign: "center",
   },
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 18,
     borderWidth: 2,
-    borderColor: COLORS.lightGray,
+    borderColor: COLORS.cardBackground,
     borderStyle: "dashed",
   },
   cloudIcon: {
@@ -226,23 +227,23 @@ const styles = StyleSheet.create({
   },
   supportText: {
     fontSize: 14,
-    color: COLORS.transparentWhite,
+    color: COLORS.black,
     textAlign: "center",
     marginBottom: 20,
   },
   orText: {
     fontSize: 18,
     fontWeight: "bold",
-    color: COLORS.transparentWhite,
+    color: COLORS.black,
     textAlign: "center",
     marginBottom: 14,
   },
   input: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.cardBackground,
     borderRadius: 8,
     padding: 12,
     marginBottom: 20,
-    color: COLORS.gray,
+    
   },
   urlButton: {
     backgroundColor: COLORS.lightGray,

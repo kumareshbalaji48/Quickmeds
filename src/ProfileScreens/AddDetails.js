@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StatusBar,TouchableOpacity, StyleSheet, TextInput, Alert, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { Slider, Button } from "react-native-elements";
@@ -8,58 +18,75 @@ const COLORS = { primary: '#020E22', white: '#fff', blue: "#4F73DF" };
 
 const AddDetails = ({ navigation }) => {
   const [hasDetails, setHasDetails] = useState(false);
-  const [gender, setGender] = useState("");
-  const [age, setAge] = useState();
-  const [weight, setWeight] = useState(0);
-  const [height, setHeight] = useState(0);
-  const [bloodType, setBloodType] = useState("AB+");
+  const [gender, setGender] = useState("Female");
+  const [age, setAge] = useState(18);
+  const [weight, setWeight] = useState(50);
+  const [height, setHeight] = useState(160);
+  const [bloodType, setBloodType] = useState("O+");
   const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = auth().currentUser;
   const userId = currentUser?.uid;
-
-  
   const isHospitalUser = currentUser?.email?.includes("@hospital.com");
-
-  
   const hospitalId = isHospitalUser ? currentUser?.email.split("@")[0] : null;
+
+  const getUserRef = () => {
+    if (isHospitalUser) {
+      return firestore()
+        .collection("users")
+        .doc("hospital")
+        .collection("uid")
+        .doc(hospitalId)
+        .collection("details")
+        .doc(userId);
+    } else {
+      return firestore()
+        .collection("users")
+        .doc("phone")
+        .collection(userId)
+        .doc("details");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        let userRef;
-        if (isHospitalUser) {
-          
-          userRef = firestore()
-            .collection("users")
-            .doc("hospital")
-            .collection("uid")
-            .doc(hospitalId) 
-            .collection("details") 
-            .doc(userId); 
-        } else {
-         
-          userRef = firestore()
-            .collection("users")
-            .doc("phone")
-            .collection(userId)
-            .doc("details"); 
-        }
-
+        const userRef = getUserRef();
         const doc = await userRef.get();
+
         if (doc.exists) {
           const data = doc.data();
           setGender(data.gender || "Female");
-          setAge(data.age || 26);
-          setWeight(data.weight || 65);
-          setHeight(data.height || 176);
-          setBloodType(data.bloodType || "AB+");
+          setAge(data.age || 18);
+          setWeight(data.weight || 50);
+          setHeight(data.height || 160);
+          setBloodType(data.bloodType || "O+");
           setHasDetails(true);
+
+          const updatedData = {
+            gender: data.gender || "Female",
+            age: data.age || 18,
+            weight: data.weight || 50,
+            height: data.height || 160,
+            bloodType: data.bloodType || "O+",
+          };
+
+          if (
+            !data.gender ||
+            !data.age ||
+            !data.weight ||
+            !data.height ||
+            !data.bloodType
+          ) {
+            await userRef.set(updatedData, { merge: true });
+          }
+        } else {
+          setHasDetails(false);
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
-        Alert.alert("Error", "Unable to fetch your details. Please try again later.");
+        Alert.alert("Error", "Unable to fetch details. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -69,27 +96,14 @@ const AddDetails = ({ navigation }) => {
   }, [isHospitalUser, userId, hospitalId]);
 
   const saveDetails = async () => {
+    if (!gender || !bloodType || age <= 0 || weight <= 0 || height <= 0) {
+      Alert.alert("Error", "Please fill in all fields with valid values before saving.");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      let userRef;
-      if (isHospitalUser) {
-        
-        userRef = firestore()
-          .collection("users")
-          .doc("hospital")
-          .collection("uid")
-          .doc(hospitalId) 
-          .collection("details") 
-          .doc(userId); 
-      } else {
-        
-        userRef = firestore()
-          .collection("users")
-          .doc("phone")
-          .collection(userId) 
-          .doc("details"); 
-      }
-
+      const userRef = getUserRef();
       await userRef.set({
         gender,
         age,
@@ -205,11 +219,12 @@ const AddDetails = ({ navigation }) => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
-    padding: 20,
+    padding: 10,
   },
   loaderContainer: {
     flex: 1,
@@ -227,14 +242,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 20,
+    paddingHorizontal: 18,
   },
   imageWrapper: {
     marginBottom: 80,
   },
   icon: {
-    height: 350,
-    width: 350,
+    height: 300,
+    width: 300,
     resizeMode: "contain",
   },
   title: {
@@ -278,7 +293,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   genderButton: {
-    width: 115,
+    width: 110,
     borderRadius: 30,
     borderColor: "#00bcd4",
     borderWidth: 1,
@@ -302,7 +317,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     color: COLORS.white,
     padding: 10,
-    marginBottom: 40,
+    marginBottom: 28,
     borderColor: COLORS.white,
     borderWidth: 0.2,
   },

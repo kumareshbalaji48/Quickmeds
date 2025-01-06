@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet,StatusBar, Image, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, StatusBar, Image, ActivityIndicator, TouchableOpacity } from "react-native";
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
@@ -14,10 +15,12 @@ const COLORS = {
   cardRed: "#5A2E2E",
   cardOrange: "#D45C16",
   lightGray: "#1E2D44",
-  transparentWhite: "rgba(255, 255, 255, 0.7)", 
+  transparentWhite: "rgba(255, 255, 255, 0.7)",
 };
+
 const Profile = ({ navigation, userId }) => {
   const [userDetails, setUserDetails] = useState(null);
+  const [aboutDetails, setAboutDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,39 +30,44 @@ const Profile = ({ navigation, userId }) => {
 
         if (!uid) {
           console.log("No user ID available!");
-          navigation.replace("AddDetails");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AddDetails" }],
+          });
           return;
         }
 
-        const currentUser = auth().currentUser;
-        const isHospitalUser = currentUser?.email?.includes("@hospital.com");
-        const hospitalId = isHospitalUser ? currentUser?.email.split("@")[0] : null;
+        // Fetch `details` document
+        const userRef = firestore().collection("users").doc("phone").collection(uid).doc("details");
+        const userDoc = await userRef.get();
 
-        let userDoc;
-
-        if (isHospitalUser && hospitalId) {
-          userDoc = await firestore()
-            .collection("users")
-            .doc("hospital")
-            .collection("uid")
-            .doc(hospitalId)
-            .collection("details")
-            .doc(uid)
-            .get();
-        } else {
-          userDoc = await firestore()
-            .collection("users")
-            .doc("phone")
-            .collection(uid)
-            .doc("details")
-            .get();
-        }
+        // Fetch `about` document
+        const aboutRef = firestore().collection("users").doc("phone").collection(uid).doc("about");
+        const aboutDoc = await aboutRef.get();
 
         if (userDoc.exists) {
-          setUserDetails(userDoc.data());
+          const detailsData = userDoc.data();
+          const requiredFields = ["gender", "age", "weight", "bloodType"];
+          const isIncomplete = requiredFields.some((field) => !detailsData[field]);
+
+          if (isIncomplete) {
+            console.log("Incomplete user data! Redirecting to AddDetails page.");
+            navigation.navigate("AddDetails", { userData: detailsData }); // Pass existing data
+          } else {
+            setUserDetails(detailsData);
+          }
         } else {
-          console.log("No user data found! Redirecting to Add Details page.");
-          navigation.replace("AddDetails");
+          console.log("No user details found! Redirecting to AddDetails page.");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "AddDetails" }],
+          });
+        }
+
+        if (aboutDoc.exists) {
+          setAboutDetails(aboutDoc.data());
+        } else {
+          console.log("No about document found!");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -74,7 +82,7 @@ const Profile = ({ navigation, userId }) => {
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0FEDED" />
+        <ActivityIndicator size="large" color={COLORS.blue} />
       </View>
     );
   }
@@ -102,31 +110,26 @@ const Profile = ({ navigation, userId }) => {
       </View>
 
       <View style={styles.cardContainer}>
-      <View style={styles.cardRow}>
-        
-  <View style={styles.logoContainer}>
-    <Image
-      source={require("../../assets/images/quickmeds.png")}
-      style={styles.logo}
-    />
-    
-    
-    <View style={styles.cardTextContainer}>
-    
-      <Text style={styles.cardSubtext}>Patient Details :</Text>
-      <Text style={styles.cardSubtext}>HOSP ID - {userDetails?.hospitalid || "00000"}</Text>
-      <Text style={styles.cardSubtext}>JOINED - {userDetails?.joinDate || "N/A"}</Text>
-    </View>
-  </View>
-  <Image
-    source={require("../../assets/images/profile/frame.png")}
-    style={styles.frameImage}
-  />
-</View>
-
+        <View style={styles.cardRow}>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../../assets/images/quickmeds.png")}
+              style={styles.logo}
+            />
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.cardSubtext}>Patient Details:</Text>
+              <Text style={styles.cardSubtext}>HOSP ID - {aboutDetails?.hospitalid || "N/A"}</Text>
+              <Text style={styles.cardSubtext}>JOINED - {aboutDetails?.joinDate || "N/A"}</Text>
+            </View>
+          </View>
+          <Image
+            source={require("../../assets/images/profile/frame.png")}
+            style={styles.frameImage}
+          />
+        </View>
 
         <View style={styles.patientDetailsContainer}>
-          <Text style={styles.cardName}>{userDetails?.name || "FIRST-LAST NAME"}</Text>
+          <Text style={styles.cardName}>{aboutDetails?.name || "FIRST-LAST NAME"}</Text>
           <Image
             source={require("../../assets/images/profile/barcode.png")}
             style={styles.barcode}
@@ -134,7 +137,16 @@ const Profile = ({ navigation, userId }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.supportButton} onPress={() => navigation.navigate("FirstPage")}>
+      <TouchableOpacity
+        style={styles.supportButton}
+        onPress={() => {
+          auth().signOut();
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "FirstPage" }],
+          });
+        }}
+      >
         <Text style={styles.supportButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>

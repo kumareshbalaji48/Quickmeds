@@ -46,7 +46,7 @@ export default function HomePage({ navigation }) {
             .collection("users")
             .doc("phone")
             .collection(user.uid)
-            .doc("details")
+            .doc("about")
             .get();
 
           if (phoneDoc.exists) {
@@ -219,7 +219,7 @@ export default function HomePage({ navigation }) {
             style={styles.cardIcon}
           />
           <Text style={styles.cardTitle}>Report Summarizer</Text>
-          <Text style={styles.cardSubtitle}>Summarizer</Text>
+          <Text style={styles.cardSubtitle}>NLP based</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

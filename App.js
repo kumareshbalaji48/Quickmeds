@@ -10,7 +10,7 @@ import OnboardingScreen from './src/OnboardingScreen.js';
 import FirstPage from './src/FirstPage.js';
 import PhoneAuth from './src/AuthScreens/PhoneAuth.js';
 import HospitalIDAuth from './src/AuthScreens/HospitalIDAuth.js';
-import Dashboard from './src/AuthScreens/Dashboard.js';
+//import Dashboard from './src/AuthScreens/Dashboard.js';
 import RegisterPhone from './src/AuthScreens/RegisterPhone.js';
 import SignIn from './src/AuthScreens/SignIn.js';
 import HomePage from './src/HomeScreens/HomePage.js';
@@ -24,9 +24,17 @@ import AddDetails from './src/ProfileScreens/AddDetails.js';
 import AddNotes from './src/Records/AddNotes.js';
 import Reports from './src/Records/Reports.js';
 import Test from './src/Records/Test.js';
-import AppointmentPage from './src/AppointmentScreens/AppointmentPage.js';
 import BillPdf from './src/BillScreens/BillPdf.js';
 import Result from './src/NlpScreens/Result.js';
+import AppointmentPage from "./src/AppointmentScreens/AppointmentPage.js";
+import ENT from "./src/AppointmentScreens/ENT.js";
+import Psychiatrist from "./src/AppointmentScreens/Psychiatrist.js";
+import Dentist from "./src/AppointmentScreens/Dentist.js";
+import Dermato from "./src/AppointmentScreens/Dermato.js";
+import DoctorsList from "./src/AppointmentScreens/DoctorsList.js";
+import DoctorDetails from "./src/AppointmentScreens/DoctorDetails.js";
+import AppointmentConfirmation from "./src/AppointmentScreens/AppointmentConfirmation.js";
+
 
 import { Buffer } from 'buffer';
 global.Buffer = Buffer;
@@ -79,7 +87,7 @@ const App = () => {
           <Stack.Screen name="HospitalIDAuth" component={HospitalIDAuth} options={{headerShown: false}}/>
           <Stack.Screen name="RegisterPhone" component={RegisterPhone} options={{headerShown: false}}/>
           <Stack.Screen name="SignIn" component={SignIn} options={{headerShown: false}}/>
-          <Stack.Screen name="Dashboard" component={Dashboard} options={{headerShown: false}} />
+
           <Stack.Screen name="HomePage" component={HomePage} options={{headerShown: false}} />
           <Stack.Screen name="BillStatements" component={BillStatements} options={{headerShown: false}} />
           <Stack.Screen name="BookAppointments" component={BookAppointments} options={{headerShown: false}} />
@@ -90,9 +98,49 @@ const App = () => {
           <Stack.Screen name="Reports" component={Reports} options={{headerShown: false}} />
           <Stack.Screen name="AddNotes" component={AddNotes} options={{headerShown: false}} />
           <Stack.Screen name="Test" component={Test} options={{headerShown: false}} />
-          <Stack.Screen name="AppointmentPage" component={AppointmentPage} options={{headerShown: false}} />
           <Stack.Screen name="BillPdf" component={BillPdf} options={{headerShown: false}} />
           <Stack.Screen name="Process" component={Process} options={{headerShown: false}} />
+          <Stack.Screen
+            name="AppointmentPage"
+            component={AppointmentPage}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ENT"
+            component={ENT}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Psychiatrist"
+            component={Psychiatrist}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Dentist"
+            component={Dentist}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Dermato"
+            component={Dermato}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DoctorsList"
+            component={DoctorsList}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DoctorDetails"
+            component={DoctorDetails}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AppointmentConfirmation"
+            component={AppointmentConfirmation}
+            options={{ headerShown: false }}
+          />
+
           <Stack.Screen name="Result" component={Result} options={{headerShown: false}} />
         </Stack.Navigator>
       </NavigationContainer>
