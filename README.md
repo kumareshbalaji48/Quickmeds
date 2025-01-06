@@ -1,54 +1,102 @@
+# QuickMeds
 
-# Welcome to your Expo app 👋
+Welcome to **QuickMeds**, a React Native Expo project aimed at building a comprehensive patient assistive application. This README provides instructions and important information for setting up and running the application during its initial development phase.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+## Get Started
 
-1. Install dependencies
-
+### Prerequisites
+   
+   Follow the eas documentation to install the necessary dependencies , also the platform is a expo development build 
+1. **Install npx expo-cli**: Ensure you have `npx expo-cli` installed. You can do this with:
    ```bash
-   npm install
+   npm install -g expo-cli
    ```
 
-2. Start the app
-
+2. **Login with EAS Credentials**: Log in to your Expo account:
    ```bash
-    npx expo start
+   npx expo login
    ```
 
-In the output, you'll find options to open the app in a
+3. **Build the Platform for Android**: To generate an APK for the emulator or physical device, use the command:
+   ```bash
+   npx expo run:android
+   ```
+   After the build completes, download the APK and install it on your emulator or physical device.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Install Dependencies
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+After cloning the repository, run:
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Run the App
 
-## Learn more
+Once the APK is installed on your emulator or device, start the development server with:
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Development Notes
 
-## Join the community
+This project is currently in its **initial development phase**. Below are the key features and their progress:
 
-Join our community of developers creating universal apps.
+### Features Overview
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. **Sign-In with Phone Number**:
+   - **Status**: Fully functional.
+   - **Details**: Currently uses Firebase for authentication.
+   - **Test Credentials**: Since the project is on the Firebase Free (Spark) plan, use the following test credentials for development:
+     - Phone Number: `+911234567890`
+     - Password: `123456`
 
-# Quickmeds
+2. **Book Appointment**:
+   - **Status**: Frontend completed.
+   Under the BookAppointment.js file , there is a field "hospitallocation" where the latitude and longitude must be changed according to the hospital location/user location for accessing the AppointmentScreens
+   - **Details**: Integration with the web interface for live appointment booking is not yet implemented.
+
+3. **NLP-Based Medical Summarizer**:
+   - **Status**: Frontend completed.
+   - **Details**: Google Cloud Healthcare API setup is complete, and backend implementation is in its final stages.
+
+4. **Medical Bill and History Management**:
+   - **Status**: Backend implementation in progress.
+   - **Details**: Bill records and medical history features are in active development.
+
+---
+
+## Development Environment
+
+- **Mobile App**: React Native with Expo Dev Build
+- **Backend**: Firebase
+- **Editor**: Visual Studio Code
+- **Emulator**: Android Studio for testing
+
+---
+
+## Known Limitations
+
+- **Firebase Blaze Plan**: The project currently uses the Free (Spark) plan. This limits scalability and functionality for advanced testing.
+- **Feature Completion**:
+  - Book Appointment: Frontend done; backend integration pending.
+  - NLP Summarizer: Cloud setup complete; backend nearing completion.
+
+---
+
+## Future Plans
+
+- Fully integrate live appointment booking with web interface.
+- Complete backend implementation for all features.
+- Upgrade to Firebase Blaze Plan for enhanced functionality.
+- Expand feature set to include push notifications and detailed analytics.
+
+---
+
+## Community
+
+For any questions or contributions, feel free to join the discussion or raise issues in the repository. Stay tuned for updates as we continue to develop **QuickMeds** into a robust and comprehensive healthcare solution.
 
