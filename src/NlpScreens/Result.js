@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert, Modal, TouchableOpacity } from 'react-native';
-import { Button, Card, Portal, Provider, Text } from 'react-native-paper';
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
-import { WebView } from 'react-native-webview'; // WebView to display PDF
-import { title } from 'process';
+import React, { useState } from "react";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { Text, Button, Divider, Card, Portal, Modal, Provider } from "react-native-paper";
+import { WebView } from "react-native-webview";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
-  cardBlue: "#293C7A",
+  cardBlue: "#1C2A54",
   accent: "#0FEDED",
   blue: "#4F73DF",
   gray: "#2A2A2A",
+  transparentWhite: "rgba(255, 255, 255, 0.7)",
 };
 
 const Result = ({ route, navigation }) => {
@@ -24,161 +24,142 @@ const Result = ({ route, navigation }) => {
     return null;
   }
 
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [pdfUri, setPdfUri] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
   const generateHtml = (summaryText) => `
-  <html>
-    <head>
-      <style>
-        body {
-          font-family: 'Arial', sans-serif;
-          margin: 0;
-          padding: 20px;
-          background-color: #121212;
-          color: #FFFFFF;
-        }
-        .report-container {
-          max-width: 800px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: #1E1E1E;
-          border: 2px solid #0FEDED;
-          border-radius: 12px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-        .report-header {
-          text-align: center;
-          border-bottom: 2px solid #0FEDED;
-          padding-bottom: 10px;
-          margin-bottom: 20px;
-        }
-        .report-header h1 {
-          color: #0FEDED;
-          font-size: 28px;
-          margin: 0;
-        }
-        .report-header p {
-          font-size: 16px;
-          color: #BBBBBB;
-          margin: 0;
-        }
-        .report-content {
-          line-height: 1.8;
-          font-size: 18px;
-          color: #FFFFFF;
-        }
-        .report-content p {
-          margin: 10px 0;
-          text-align: justify;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="report-container">
-        <div class="report-header">
-          <h1>Medical Report Summary</h1>
-          <p>Confidential - For Patient Use Only</p>
+    <html>
+      <head>
+        <style>
+          body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #101820;
+            color: #FFFFFF;
+            line-height: 1.8;
+          }
+          .report-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            background-color: #1E1E1E;
+            border: 3px solid #0FEDED;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(15, 237, 237, 0.4);
+          }
+          .report-header {
+            text-align: center;
+            border-bottom: 2px solid #0FEDED;
+            margin-bottom: 25px;
+          }
+          .report-header h1 {
+            font-size: 32px;
+            color: #0FEDED;
+            margin-bottom: 10px;
+          }
+          .report-content {
+            font-size: 20px;
+            text-align: justify;
+            letter-spacing: 0.5px;
+          }
+          .report-content p {
+            margin-bottom: 15px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="report-container">
+          <div class="report-header">
+            <h1>Medical Report Summary</h1>
+          </div>
+          <div class="report-content">
+            ${summaryText.split("\n").map((para) => `<p>${para}</p>`).join("")}
+          </div>
         </div>
-        <div class="report-content">
-          <p>${summaryText.replace(/\n/g, '<br>')}</p>
-        </div>
-      </div>
-    </body>
-  </html>
-`;
+      </body>
+    </html>
+  `;
 
-  const generatePdf = async () => {
+  const [visible, setVisible] = useState(false);
+  const [htmlContent] = useState(generateHtml(summary));
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+
+  const generatePDF = async () => {
     try {
-      setIsGenerating(true);
-      const htmlContent = generateHtml(summary);
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
-      setPdfUri(uri);
       Alert.alert("Success", "PDF generated successfully.");
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri);
+      } else {
+        Alert.alert("Error", "Sharing is not available on this device.");
+      }
     } catch (error) {
       console.error("Error generating PDF:", error);
-      Alert.alert("Error", "There was an error generating the PDF.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleShare = async () => {
-    if (pdfUri && (await Sharing.isAvailableAsync())) {
-      await Sharing.shareAsync(pdfUri);
-    } else {
-      Alert.alert("Error", "Sharing is not available or PDF not generated.");
+      Alert.alert("Error", "Failed to generate the PDF.");
     }
   };
 
   return (
     <Provider>
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView>
           <Card style={styles.card}>
-            <Card.Title title="Medical Report Summary" subtitle="Generated Report"  />
+            <Card.Title
+              title="Medical Report Summary"
+              titleStyle={{ fontSize: 24, color: COLORS.accent,fontWeight:"bold"
+
+               }
+              
+              }
+              subtitle="Generated Report :"
+              subtitleStyle={{fontSize:18,color:COLORS.white,fontWeight:"ultralight"}}
+            />
             <Card.Content>
               <Text style={styles.summaryText}>{summary}</Text>
             </Card.Content>
           </Card>
-
-          <View style={styles.buttonsContainer}>
-            <Button
-              mode="contained"
-              loading={isGenerating}
-              onPress={generatePdf}
-              style={styles.button}
-              icon="file-pdf-box"
-            >
-              Generate PDF
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => setIsModalVisible(true)}
-              style={styles.button}
-              icon="eye"
-              disabled={!pdfUri}
-            >
-              View PDF
-            </Button>
-            <Button
-              mode="contained"
-              onPress={handleShare}
-              style={styles.button}
-              icon="share"
-              disabled={!pdfUri}
-            >
-              Share PDF
-            </Button>
-          </View>
         </ScrollView>
 
-        {/* Modal for PDF Viewer */}
+        <Button
+          mode="contained"
+          buttonColor={COLORS.transparentWhite}
+          textColor="#000"
+          onPress={showModal}
+          icon="eye"
+          style={styles.button}
+        >
+          Preview PDF
+        </Button>
+
+        <Button
+          mode="contained"
+          buttonColor={COLORS.transparentWhite}
+          textColor="#000"
+          onPress={generatePDF}
+          icon="file-pdf-box"
+          style={styles.button}
+        >
+          Generate PDF
+        </Button>
+
         <Portal>
           <Modal
-            visible={isModalVisible}
-            animationType="slide"
-            onDismiss={() => setIsModalVisible(false)}
+            visible={visible}
+            onDismiss={hideModal}
             contentContainerStyle={styles.modalContainer}
+            accessibilityLabel="PDF preview modal"
           >
-            <View style={styles.modalContent}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setIsModalVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-              {pdfUri ? (
-                <WebView
-                  source={{ uri: pdfUri }}
-                  style={styles.webView}
-                  onError={() => Alert.alert("Error", "Failed to load PDF.")}
-                />
-              ) : (
-                <Text style={styles.errorText}>No PDF to display</Text>
-              )}
-            </View>
+            <WebView originWhitelist={["*"]} source={{ html: htmlContent }} style={{ flex: 1 }} />
+            <Button
+              mode="contained"
+              onPress={hideModal}
+              style={styles.closeButton}
+              textColor="#FFF"
+              buttonColor={COLORS.accent}
+            >
+              Close
+            </Button>
           </Modal>
         </Portal>
       </View>
@@ -192,69 +173,48 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     padding: 18,
   },
-  scrollViewContainer: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   card: {
     width: "100%",
     backgroundColor: COLORS.cardBlue,
     marginBottom: 20,
-    padding: 8,
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    padding: 15,
+    borderRadius: 10,
+    borderColor: COLORS.transparentWhite,
+    borderWidth: 0.8,
+    shadowColor: "#0FEDED",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
   },
   summaryText: {
     fontSize: 18,
     color: COLORS.white,
-    lineHeight: 26,
+    lineHeight: 28,
     textAlign: "justify",
-    padding: 10,
-  },
-  buttonsContainer: {
-    width: "100%",
-    alignItems: "center",
   },
   button: {
-    marginVertical: 6,
-    backgroundColor: COLORS.accent,
-    width: "97%"
+    marginTop: 10,
+    padding: 8,
+    borderRadius: 30,
+    width: "98%",
+    alignSelf: "center",
+    elevation: 2,
   },
   modalContainer: {
-    backgroundColor: COLORS.primary,
-    padding: 20,
-    borderRadius: 12,
-  },
-  modalContent: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    margin: 20,
+    backgroundColor: COLORS.white,
+    borderRadius: 10,
+    padding: 12,
+    overflow: "hidden",
+    maxHeight: "90%",
   },
   closeButton: {
-    alignSelf: "flex-end",
-    backgroundColor: COLORS.accent,
-    borderRadius: 8,
-    padding: 10,
-    margin: 10,
+    marginTop: 10,
+    borderRadius: 28,
+    width: "55%",
+    alignSelf: "center",
   },
-  closeButtonText: {
-    color: COLORS.white,
-    fontWeight: "bold",
-  },
-  webView: {
-    flex: 1,
-    width: "100%",
-  },
-  errorText: {
-    color: COLORS.white,
-    textAlign: "center",
-    marginTop: 20,
-  },
+
 });
 
 export default Result;

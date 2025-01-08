@@ -17,7 +17,7 @@ const upload = multer({
 });
 
 // Initialize Google Generative AI Client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 
 // Analyze Entities in a document and summarize using Gemini
 export async function uploadFileAndSummarize(req, res) {
@@ -77,7 +77,7 @@ const analyzeEntitiesUsingHealthcareNLP = async (documentContent) => {
     const url = `https://healthcare.googleapis.com/v1/projects/quickmeds-447010/locations/asia-south1/services/nlp:analyzeEntities`;
 
     const auth = new google.auth.GoogleAuth({
-      keyFile: path.resolve(__dirname, "../quickmeds-447010-6eeb72406eb9.json"), // Absolute path to service account key
+      keyFile: path.resolve(__dirname, "../key.json"), // Absolute path to service account key
       scopes: ["https://www.googleapis.com/auth/cloud-healthcare"],
     });
 

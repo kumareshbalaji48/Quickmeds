@@ -3,6 +3,7 @@ import { View, ActivityIndicator, Alert, StyleSheet, Text, Platform } from "reac
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
+
 const COLORS = {
   primary: "#0A1128",
   white: "#FFFFFF",
@@ -74,7 +75,7 @@ const Process = ({ route }) => {
         <ActivityIndicator size="large" color={COLORS.green} />
       ) : (
         <Text style={styles.text}>
-          {summary || "Summary could not be retrieved. Please try again."}
+          {"Summary retrieved .... Redirecting to Result Page, OOPs ! you are back here , go to Home page" || "Summary could not be retrieved. Please try again."}
         </Text>
       )}
     </View>

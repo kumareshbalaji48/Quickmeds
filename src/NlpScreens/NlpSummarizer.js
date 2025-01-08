@@ -62,12 +62,6 @@ const NlpSummarizer = () => {
     }
   };
   
-  
-  
-  
-  
-  
-
   const handleUrlUpload = () => {
     if (!url) {
       Alert.alert("Error", "Please enter a valid URL.");
