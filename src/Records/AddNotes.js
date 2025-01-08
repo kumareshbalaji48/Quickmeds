@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
   addButton: {
     backgroundColor: COLORS.lightGray,
     padding: 15,
-    width:370,
+    width:350,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",

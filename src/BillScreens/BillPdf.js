@@ -243,6 +243,7 @@ const BillPdf = () => {
           buttonColor={COLORS.transparentWhite}
           textColor="#000"
           onPress={showModal}
+          icon="eye"
           style={styles.generateButton}
           accessibilityLabel="Preview the generated PDF document"
         >
@@ -251,10 +252,11 @@ const BillPdf = () => {
         </Button>
 
         <Button
-          mode="contained"
+          mode="contained-tonal"
           buttonColor={COLORS.transparentWhite}
           textColor="#000"
           onPress={generatePDF}
+          icon="file-pdf-box"
           style={styles.generateButton}
         >
           <Text style={{ color: "#000" }}>Generate PDF</Text>
@@ -335,8 +337,8 @@ const styles = StyleSheet.create({
   },
   generateButton: {
     marginTop: 10,
-    padding: 10,
-    borderRadius: 25,
+    padding: 12,
+    borderRadius: 28,
   },
   modalContainer: {
     flex: 1,

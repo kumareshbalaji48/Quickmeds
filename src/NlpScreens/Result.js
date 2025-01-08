@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Button, Alert, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import { Portal } from 'react-native-paper'; 
-import { WebView } from 'react-native-webview'; 
-import * as Print from 'expo-print'; 
-import * as Sharing from 'expo-sharing'; 
+import { View, StyleSheet, ScrollView, Alert, Modal, TouchableOpacity } from 'react-native';
+import { Button, Card, Portal, Provider, Text } from 'react-native-paper';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
+import { WebView } from 'react-native-webview'; // WebView to display PDF
+import { title } from 'process';
 
 const COLORS = {
   primary: "#020E22",
@@ -13,139 +13,89 @@ const COLORS = {
   accent: "#0FEDED",
   blue: "#4F73DF",
   gray: "#2A2A2A",
-  transparentWhite: "rgba(255, 255, 255, 0.7)",
 };
 
 const Result = ({ route, navigation }) => {
-  const fallbackSummary = ` Medical Report Summary for John Doe
+  const { summary } = route.params || {};
 
-  Patient Name: John Doe
-  Age: 45
-  Gender: Male
-  Date: January 2, 2025
-
-  Clinical Summary:
-  The patient has been experiencing progressive shortness of breath (dyspnea), chest pain, and occasional difficulty breathing while lying down (orthopnea) over the last six months. Examination revealed abnormal lung sounds (bilateral basilar crackles), diminished breath sounds, and swelling in the lower limbs (moderate edema). The presence of an S3 heart sound raised concerns about potential congestive heart failure (CHF).
-
-  Diagnostic Workup:
-  - ECG: Sinus tachycardia with no signs of acute ischemia.
-  - Chest X-ray: Cardiomegaly with pulmonary congestion and mild pleural effusion.
-  - Echocardiogram: Ejection fraction of 35%, indicating left ventricular dysfunction.
-  - BNP: Elevated at 950 pg/mL, confirming heart failure with reduced ejection fraction (HFrEF).
-
-  Management:
-  The patient was prescribed ACE inhibitors, beta-blockers, and diuretics to manage symptoms. A cardiology referral was made to consider advanced treatments, including the potential use of an implantable cardioverter-defibrillator (ICD).
-
-  Follow-up:
-  A follow-up appointment is scheduled in two weeks to evaluate treatment response and conduct further diagnostic tests.`; 
-
-  const { summary } = route.params || { summary: fallbackSummary };
+  if (!summary) {
+    Alert.alert("Error", "No summary received from the Process page.");
+    navigation.goBack();
+    return null;
+  }
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfUri, setPdfUri] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const generateHtml = (summaryText) => {
-    return `
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: 'Arial', sans-serif;
-              background-color: #f4f4f4;
-              margin: 0;
-              padding: 20px;
-              color: #333;
-            }
-            h1 {
-              color: #0FEDED;
-              font-size: 36px;
-              font-weight: bold;
-              margin-bottom: 20px;
-              text-align: center;
-            }
-            p {
-              font-size: 18px;
-              line-height: 1.8;
-              margin-bottom: 20px;
-              color: #555;
-              text-align: justify;
-            }
-            .section-title {
-              color: #157A6E;
-              font-weight: bold;
-              font-size: 22px;
-              margin-top: 30px;
-              margin-bottom: 10px;
-            }
-            .summary-text {
-              font-size: 18px;
-              margin-bottom: 20px;
-              text-align: justify;
-              color: #333;
-            }
-            .content-container {
-              max-width: 800px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #ffffff;
-              border-radius: 8px;
-              box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            }
-            .footer {
-              font-size: 14px;
-              color: #999;
-              text-align: center;
-              margin-top: 30px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="content-container">
-            <h1>Medical Report Summary</h1>
-            <p><strong>Patient Name:</strong> John Doe</p>
-            <p><strong>Age:</strong> 45</p>
-            <p><strong>Gender:</strong> Male</p>
-            <p><strong>Date:</strong> January 2, 2025</p>
-            
-            <div class="section-title">Clinical Summary</div>
-            <p class="summary-text">${summaryText}</p>
-            
-            <div class="section-title">Diagnostic Workup</div>
-            <p class="summary-text">
-              - ECG: Sinus tachycardia with no signs of acute ischemia.<br>
-              - Chest X-ray: Cardiomegaly with pulmonary congestion and mild pleural effusion.<br>
-              - Echocardiogram: Ejection fraction of 35%, indicating left ventricular dysfunction.<br>
-              - BNP: Elevated at 950 pg/mL, confirming heart failure with reduced ejection fraction (HFrEF).
-            </p>
-            
-            <div class="section-title">Management</div>
-            <p class="summary-text">
-              The patient was prescribed ACE inhibitors, beta-blockers, and diuretics to manage symptoms. A cardiology referral was made to consider advanced treatments, including the potential use of an implantable cardioverter-defibrillator (ICD).
-            </p>
-            
-            <div class="section-title">Follow-up</div>
-            <p class="summary-text">
-              A follow-up appointment is scheduled in two weeks to evaluate treatment response and conduct further diagnostic tests.
-            </p>
-          </div>
-  
-          <div class="footer">Generated on: ${new Date().toLocaleDateString()}</div>
-        </body>
-      </html>
-    `;
-  };
+  const generateHtml = (summaryText) => `
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: 'Arial', sans-serif;
+          margin: 0;
+          padding: 20px;
+          background-color: #121212;
+          color: #FFFFFF;
+        }
+        .report-container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #1E1E1E;
+          border: 2px solid #0FEDED;
+          border-radius: 12px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .report-header {
+          text-align: center;
+          border-bottom: 2px solid #0FEDED;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+        }
+        .report-header h1 {
+          color: #0FEDED;
+          font-size: 28px;
+          margin: 0;
+        }
+        .report-header p {
+          font-size: 16px;
+          color: #BBBBBB;
+          margin: 0;
+        }
+        .report-content {
+          line-height: 1.8;
+          font-size: 18px;
+          color: #FFFFFF;
+        }
+        .report-content p {
+          margin: 10px 0;
+          text-align: justify;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="report-container">
+        <div class="report-header">
+          <h1>Medical Report Summary</h1>
+          <p>Confidential - For Patient Use Only</p>
+        </div>
+        <div class="report-content">
+          <p>${summaryText.replace(/\n/g, '<br>')}</p>
+        </div>
+      </div>
+    </body>
+  </html>
+`;
 
   const generatePdf = async () => {
     try {
       setIsGenerating(true);
-
       const htmlContent = generateHtml(summary);
-
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
-
       setPdfUri(uri);
-      Alert.alert("Success", "PDF generated successfully. You can now view or download it.");
+      Alert.alert("Success", "PDF generated successfully.");
     } catch (error) {
       console.error("Error generating PDF:", error);
       Alert.alert("Error", "There was an error generating the PDF.");
@@ -154,28 +104,8 @@ const Result = ({ route, navigation }) => {
     }
   };
 
-  const openPdfModal = () => {
-    if (pdfUri) {
-      setIsModalVisible(true);
-    } else {
-      Alert.alert("Error", "Please generate the PDF first.");
-    }
-  };
-
-  const closePdfModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const handlePrint = async () => {
-    if (pdfUri) {
-      await Print.printAsync({ uri: pdfUri });
-    } else {
-      Alert.alert("Error", "Please generate the PDF first.");
-    }
-  };
-
   const handleShare = async () => {
-    if (pdfUri && Sharing.isAvailableAsync()) {
+    if (pdfUri && (await Sharing.isAvailableAsync())) {
       await Sharing.shareAsync(pdfUri);
     } else {
       Alert.alert("Error", "Sharing is not available or PDF not generated.");
@@ -183,133 +113,147 @@ const Result = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Text style={styles.summary}>{summary}</Text>
-      </ScrollView>
+    <Provider>
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          <Card style={styles.card}>
+            <Card.Title title="Medical Report Summary" subtitle="Generated Report"  />
+            <Card.Content>
+              <Text style={styles.summaryText}>{summary}</Text>
+            </Card.Content>
+          </Card>
 
-      <Portal>
-        {isModalVisible && (
-          <View style={styles.modalContainer}>
+          <View style={styles.buttonsContainer}>
+            <Button
+              mode="contained"
+              loading={isGenerating}
+              onPress={generatePdf}
+              style={styles.button}
+              icon="file-pdf-box"
+            >
+              Generate PDF
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => setIsModalVisible(true)}
+              style={styles.button}
+              icon="eye"
+              disabled={!pdfUri}
+            >
+              View PDF
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleShare}
+              style={styles.button}
+              icon="share"
+              disabled={!pdfUri}
+            >
+              Share PDF
+            </Button>
+          </View>
+        </ScrollView>
+
+        {/* Modal for PDF Viewer */}
+        <Portal>
+          <Modal
+            visible={isModalVisible}
+            animationType="slide"
+            onDismiss={() => setIsModalVisible(false)}
+            contentContainerStyle={styles.modalContainer}
+          >
             <View style={styles.modalContent}>
-              <TouchableOpacity style={styles.closeButton} onPress={closePdfModal}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setIsModalVisible(false)}
+              >
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
-              <WebView
-                source={{ html: generateHtml(summary) }}
-                style={styles.webview}
-                scalesPageToFit={true}
-                javaScriptEnabled={true}
-                startInLoadingState={true}
-                renderLoading={() => <Text>Loading...</Text>}
-              />
+              {pdfUri ? (
+                <WebView
+                  source={{ uri: pdfUri }}
+                  style={styles.webView}
+                  onError={() => Alert.alert("Error", "Failed to load PDF.")}
+                />
+              ) : (
+                <Text style={styles.errorText}>No PDF to display</Text>
+              )}
             </View>
-          </View>
-        )}
-      </Portal>
-
-      <View style={styles.buttonsContainer}>
-        <Button
-          title={isGenerating ? "Generating..." : "Generate PDF"}
-          onPress={generatePdf}
-          disabled={isGenerating}
-          color={COLORS.transparentWhite}
-        />
-        <TouchableOpacity
-          style={[styles.btn, !pdfUri && styles.btnDisabled]}
-          onPress={openPdfModal}
-          disabled={!pdfUri}
-        >
-          <Text style={styles.btnText}>View PDF</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, !pdfUri && styles.btnDisabled]}
-          onPress={handlePrint}
-          disabled={!pdfUri}
-        >
-          <Text style={styles.btnText}>Print PDF</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.btn, !pdfUri && styles.btnDisabled]}
-          onPress={handleShare}
-          disabled={!pdfUri}
-        >
-          <Text style={styles.btnText}>Share PDF</Text>
-        </TouchableOpacity>
+          </Modal>
+        </Portal>
       </View>
-    </View>
+    </Provider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
     backgroundColor: COLORS.primary,
-    padding: 20,
+    padding: 18,
   },
   scrollViewContainer: {
-    width: '100%',
-    paddingHorizontal: 10,
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  summary: {
-    fontSize: 16,
+  card: {
+    width: "100%",
+    backgroundColor: COLORS.cardBlue,
     marginBottom: 20,
-    textAlign: 'justify',
+    padding: 8,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  summaryText: {
+    fontSize: 18,
     color: COLORS.white,
-    lineHeight: 24,
-  },
-  buttonsContainer: {
-    width: '100%',
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  modalContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: COLORS.white,
-    padding: 20,
-    borderRadius: 10,
-    width: '90%',
-    height: '80%',
-  },
-  closeButton: {
-    alignSelf: 'flex-end',
+    lineHeight: 26,
+    textAlign: "justify",
     padding: 10,
   },
-  closeButtonText: {
-    fontSize: 16,
-    color: COLORS.blue,
+  buttonsContainer: {
+    width: "100%",
+    alignItems: "center",
   },
-  webview: {
-    flex: 1,
-    width: '100%',
-    borderRadius: 10,
-  },
-  btn: {
-    width: '100%',
-    paddingVertical: 12,
+  button: {
+    marginVertical: 6,
     backgroundColor: COLORS.accent,
-    borderRadius: 5,
-    marginVertical: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "97%"
   },
-  btnDisabled: {
-    backgroundColor: '#D3D3D3',
+  modalContainer: {
+    backgroundColor: COLORS.primary,
+    padding: 20,
+    borderRadius: 12,
   },
-  btnText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  modalContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    backgroundColor: COLORS.accent,
+    borderRadius: 8,
+    padding: 10,
+    margin: 10,
+  },
+  closeButtonText: {
+    color: COLORS.white,
+    fontWeight: "bold",
+  },
+  webView: {
+    flex: 1,
+    width: "100%",
+  },
+  errorText: {
+    color: COLORS.white,
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

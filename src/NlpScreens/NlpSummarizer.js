@@ -10,6 +10,8 @@ import {
 import { Text, Button, Card, IconButton } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { color } from "react-native-elements/dist/helpers";
+
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
@@ -101,8 +103,8 @@ const NlpSummarizer = () => {
             <Text style={styles.cardTitle}>Media Upload</Text>
             {file && (
               <IconButton
-                icon="close"
-                color={COLORS.white}
+              mode="contained-tonal"
+                icon="close-box"
                 onPress={() => setFile(null)}
               />
             )}
@@ -158,6 +160,7 @@ const NlpSummarizer = () => {
           onPress={handleGenerateSummary}
           style={styles.generateButton}
           labelStyle={styles.buttonLabel}
+          icon="all-inclusive-box"
         >
           Generate Summary
         </Button>
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    marginBottom: 70,
+    marginBottom: 57,
     borderBottomColor: COLORS.transparentWhite,
     borderWidth: 1,
   },
@@ -181,7 +184,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.textGray,
     borderRadius: 15,
     padding: 15,
-    marginBottom:30,
+    marginBottom:25,
   },
   cardHeader: {
     flexDirection: "row",
@@ -190,9 +193,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   cardTitle: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
     color: COLORS.blue,
+    fontFamily:"system-ui",
   },
   subText: {
     fontSize: 18,

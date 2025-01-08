@@ -1,8 +1,19 @@
-import { Router } from "express";
-const router = Router();
+import express from "express"; 
+import multer from "multer"; 
 import { uploadFileAndSummarize } from "../controllers/healthcareController.js";
+import path from "path";
 
-// POST route to handle file uploads and summarization
-router.post("/backend", uploadFileAndSummarize);
+
+const router = express.Router();
+
+// Configure multer for file uploads
+const upload = multer({
+  dest: path.resolve("backend/uploads/"), 
+  limits: { fileSize: 10 * 1024 * 1024 }, 
+});
+
+
+router.post("/upload", upload.single("pdfFile"), uploadFileAndSummarize);
+
 
 export default router;

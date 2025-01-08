@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "quickmeds-447010",
+  "private_key_id": "6eeb72406eb9a0f2e14f2c825316da77b8784e27",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCf8hiu/GRpoCKQ\nlI3JgpxDQhLnf2RWAyA4vdDTCrEVBNYOx76KxkYc1PoJcYIAD59eueXVYueCKqnu\nmvj5BOULJ/aaTtdPu3dGV4vb9uTazazL7B/qaQuIbEUc/ny+NXA2wWi0gWtRKdk7\ntTdw0b2hd0joTxs1PAUptjhe9lzMCaAGdZZAnNkv4mXUX5cTBtqR1DhWxW8RY5sJ\nPAbG9EEWuQnZogRmEhhd03qujnMcQ8ITofChe8qeR5aVZzoIZn3Dw4atDsuRshPx\nbv654NE3WOZRzIhmwPJVRWjdbNleb1OVyYMb4d0VptydBKuHLj9CPLLdmqDmk9sx\nIIZ+SQjFAgMBAAECggEAIFzfcrSd6qNcqw1r3Pyg+pjpc07a8e5i/CgoEzOkHgEj\nAM2Yt8KjmBzd1MBTUgjXMdcCcpk3B6bzSFSyEMzVPVsiMhnGxhrD6Qc4xNKhfsZD\n8uT9ljQYAcwKdfHmMqRkZqfetDtFiCAkFMk3hQvjR0L4DQ1Ij45r6wM0R76oix4L\nX3BydNYK2h13U9MBRiA5VQkYDWOuV4F11BSQ7cinyHIrZPNaKz1SX1V81DCrg/S4\nfw4j8y4b3wZaOvDDq55mTyDUGQWsE6FpyJOxJRy2qRUoBmdBxs4YZUlHdQ2J7ZT2\n38t6uPb6ik5HCaYwIRnH1MJZQq0baseodOxERA6GUQKBgQDYqxiE37/gHtXHhRVX\nvQqanzNIHY0dhDfHg90+gzfQ/m49Zww5peM4qHj5M1E//ow+hO8vot+hxjlj1gSP\nSZa3TH5KuOf9m5H0+yO404on0L0I00uKPiUa/3r9fyNzGTmDuRJcYrc/N0lzdkRB\nR2mCPERXJfwuoBUqoSWxETg0bQKBgQC8+wN0N4LLIsjsx+KB9NwRg1zz1/bZa23Y\nLrXIOpfkL7D50CdmrdpN3MI4oPszM1WbcU2VYxMPlIfCgAF2PJ1BF/dmXuVY9HIz\nIvA5ZzvwDZXUho73a3nF1kZYmNShfM1mNUNCoWNOmsU1pVVIn4GJktG8wXKt2qwm\nRCdAfOP+uQKBgQDWBFMo1Nbz66Fg/mzxiJKT3tNJ1Z7RXAu48OC2YejdcKS11Db4\nLor+KTOte+oy2x3ul2Kn3Csn4eRIYFuKqbbNAirxZioJkQSgRv2nEJUz9PT0ZboF\nKJOAUoFLKq16gJ0WJtYjGYNGVzcfbN/I12A5u4wJxUSPTaL6w8i2WXr6FQKBgQCa\ngefLBu+qwZ/g53PrqJScxPgkbXfnPwwp6da6BB3XdJ6PQH5WVuHbMxigUA3RSLE/\nS52Q+9XDsT5l6V5Imzo+1CdzzTZaSlFsOa6KYDsDAzhy8CjHZVnERHJzUVDXT0Bn\nxjhdq7GTvLpsJ+bYX4D7R8yvNMJcHiMNjj9BXFrUEQKBgQCNEDqYDbs7TP6tVKic\nA2XbBg6ilEi3Lp+uHgidlaOVESTnftisDp3U5VU0hslyeqOynGSqmHOPNU5ytUuE\nd0ZHQS/IPWp1nQHw5jhcHSlEYrioHIw2oKPkDg3RhiPG6Utxsy2HQkKDG7Ns0eAS\nyxsZbi8Mxj+KUJxWGdOoawMFpw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "quick-meds-service@quickmeds-447010.iam.gserviceaccount.com",
+  "client_id": "109890499569557759955",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/quick-meds-service%40quickmeds-447010.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ActivityIndicator, Alert, StyleSheet, Text } from "react-native";
+import { View, ActivityIndicator, Alert, StyleSheet, Text, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
@@ -13,47 +13,55 @@ const COLORS = {
 };
 
 const Process = ({ route }) => {
-  const { file } = route.params;
+  const { file } = route.params; // The file passed from the previous page
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
     const extractAndSummarize = async () => {
+      if (!file || !file.uri) {
+        Alert.alert("Error", "No file selected for upload.");
+        setIsLoading(false);
+        navigation.goBack(); // Navigate back if no file is provided
+        return;
+      }
+
       try {
         const formData = new FormData();
-        formData.append("pdf", {
-          uri: file.uri,
+        formData.append("pdfFile", {
+          uri: Platform.OS === "android" ? file.uri : file.uri.replace("file://", ""),
           type: "application/pdf",
-          name: file.name,
+          name: file.name || "uploaded_file.pdf", // Fallback to default name if not provided
         });
 
-        console.log("Uploading file:", file.uri);
+        console.log("Uploading file:", formData);
 
-        const response = await axios.post(
-          "http://192.168.1.7:5000/backend",
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
+        // Replace the URL with your actual backend endpoint
+        const response = await axios.post("http://192.168.1.6:5000/api/healthcare/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          timeout: 15000, // 15 seconds timeout
+        });
 
-        // Check if summary is present in response
-        if (response.data?.summary) {
+        console.log("Server Response:", response.data);
+
+        if (response.status === 200 && response.data?.summary) {
           setSummary(response.data.summary);
+          console.log("Summary set in state:", response.data.summary);
+          navigation.navigate("Result", { summary: response.data.summary }); // Navigate to Result page
         } else {
+          console.log("Unexpected response format:", response.data);
           Alert.alert("Error", "Failed to extract summary from the file.");
         }
       } catch (error) {
-        console.error("Request Error:", error.message);
-
-        const errorMessage = error.response?.data?.message
-          ? error.response.data.message
-          : "An error occurred during file processing.";
-        Alert.alert("Error", errorMessage);
+        console.error("Request Error:", error);
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.statusText ||
+          "An error occurred during file processing.";
+        Alert.alert("Error", `File processing failed: ${errorMessage}`);
       } finally {
         setIsLoading(false);
-        navigation.navigate("Result", { summary });
       }
     };
 
@@ -66,7 +74,7 @@ const Process = ({ route }) => {
         <ActivityIndicator size="large" color={COLORS.green} />
       ) : (
         <Text style={styles.text}>
-          {summary || "Summary could not be retrieved."}
+          {summary || "Summary could not be retrieved. Please try again."}
         </Text>
       )}
     </View>
@@ -85,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.white,
     textAlign: "center",
+    paddingHorizontal: 20,
   },
 });
 

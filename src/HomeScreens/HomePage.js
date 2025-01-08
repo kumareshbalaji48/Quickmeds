@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   greeting: {
-    fontSize: 26,
+    fontSize: 27,
     fontWeight: "bold",
     color: COLORS.accent,
     fontFamily: "monospace",
@@ -286,9 +286,9 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   profileIcon: {
-    width: 35,
-    height: 35,
-    borderRadius: 6,
+    width: 39,
+    height: 39,
+    borderRadius: 17,
     borderWidth: 0.8,
     borderColor: COLORS.transparentWhite,
   },
