@@ -39,7 +39,7 @@ const Process = ({ route }) => {
         console.log("Uploading file:", formData);
 
         // Replace the URL with your actual backend endpoint
-        const response = await axios.post("http://192.168.1.6:5000/api/healthcare/upload", formData, {
+        const response = await axios.post("http://192.168.1.9:5000/api/healthcare/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           timeout: 15000, // 15 seconds timeout
         });

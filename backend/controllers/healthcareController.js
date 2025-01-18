@@ -11,10 +11,10 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 // Configure Multer to store files in the uploads directory
-const upload = multer({
+/*const upload = multer({
   dest: path.resolve(__dirname, "../uploads/"), // Use absolute path
   limits: { fileSize: 10 * 1024 * 1024 }, // Optional: Set a file size limit (10 MB)
-});
+});*/
 
 // Initialize Google Generative AI Client
 
