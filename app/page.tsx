@@ -40,14 +40,14 @@ export default function HomePage() {
 
           <div className="flex justify-center">
             <Link href="/token-management">
-              <button
+              <button 
                 className={`bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-xl 
                   font-semibold shadow-lg hover:shadow-xl transition-all duration-300 
-                  hover:scale-105 transform
+                  hover:scale-105 transform 
                   ${showButton ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
               >
                 <Play className="inline-block mr-2 w-6 h-6" />
-                Start Token
+                Start your Day!!☺️
               </button>
             </Link>
           </div>
