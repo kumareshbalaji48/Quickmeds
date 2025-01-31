@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Play } from "lucide-react"
 import Header from "@/components/Header"
+import BackgroundVideo from "@/components/BackgroundVideo"
 
 export default function HomePage() {
   const [showWelcome, setShowWelcome] = useState(false)
@@ -16,16 +17,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <BackgroundVideo videoSrc="/background-video.mp4" />
       <Header />
-      <main className="flex-grow flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Background Video */}
-        <video autoPlay loop muted className="absolute w-full h-full object-cover">
-          <source src="\background-video.mp4" type="video/mp4" />
-        </video>
-
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-blue-900 bg-opacity-50"></div>
-
+      <main className="flex-grow flex flex-col items-center justify-center relative">
         {/* Animated Main Content */}
         <div className="relative z-10 max-w-4xl mx-auto pt-20 px-6">
           <div className="text-center mb-12">
@@ -33,13 +27,14 @@ export default function HomePage() {
               className={`text-5xl font-bold text-white mb-4 transition-all duration-1000 transform
                 ${showWelcome ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
             >
-              Welcome back, Doctor
+              Welcome to Your Dashboard, Doctor!
             </h1>
             <p
               className={`text-2xl text-blue-200 transition-all duration-1000 delay-300 transform
                 ${showWelcome ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
             >
-              Your patients are waiting for you
+              "Wherever the art of medicine is loved, there is also a love of humanity." — Hippocrates
+              Stay connected, manage appointments, and provide care seamlessly. Your dedication makes a difference in every life you touch.
             </p>
           </div>
 
@@ -52,7 +47,7 @@ export default function HomePage() {
                   ${showButton ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
               >
                 <Play className="inline-block mr-2 w-6 h-6" />
-                Start Token System
+                Start Token
               </button>
             </Link>
           </div>
