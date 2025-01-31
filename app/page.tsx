@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Play } from "lucide-react"
 import Header from "@/components/Header"
 import BackgroundVideo from "@/components/BackgroundVideo"
@@ -9,11 +10,17 @@ import BackgroundVideo from "@/components/BackgroundVideo"
 export default function HomePage() {
   const [showWelcome, setShowWelcome] = useState(false)
   const [showButton, setShowButton] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    setShowWelcome(true)
-    setTimeout(() => setShowButton(true), 500)
-  }, [])
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true"
+    if (!isLoggedIn) {
+      router.push("/login")
+    } else {
+      setShowWelcome(true)
+      setTimeout(() => setShowButton(true), 500)
+    }
+  }, [router])
 
   return (
     <div className="min-h-screen flex flex-col">
