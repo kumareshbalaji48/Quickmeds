@@ -3,7 +3,6 @@ import { View, ActivityIndicator, Alert, StyleSheet, Text, Platform } from "reac
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
-
 const COLORS = {
   primary: "#0A1128",
   white: "#FFFFFF",
@@ -14,34 +13,46 @@ const COLORS = {
 };
 
 const Process = ({ route }) => {
-  const { file } = route.params; // The file passed from the previous page
+  const { file, text } = route.params; 
   const [isLoading, setIsLoading] = useState(true);
   const [summary, setSummary] = useState("");
   const navigation = useNavigation();
 
   useEffect(() => {
-    const extractAndSummarize = async () => {
-      if (!file || !file.uri) {
-        Alert.alert("Error", "No file selected for upload.");
+    const processData = async () => {
+      if (!file && !text) {
+        Alert.alert("Error", "No file or text provided for processing.");
         setIsLoading(false);
-        navigation.goBack(); // Navigate back if no file is provided
+        navigation.goBack();
         return;
       }
 
       try {
         const formData = new FormData();
-        formData.append("pdfFile", {
-          uri: Platform.OS === "android" ? file.uri : file.uri.replace("file://", ""),
-          type: "application/pdf",
-          name: file.name || "uploaded_file.pdf", // Fallback to default name if not provided
-        });
 
-        console.log("Uploading file:", formData);
+       
+        if (file && file.uri) {
+          formData.append("pdfFile", {
+            uri: Platform.OS === "android" ? file.uri : file.uri.replace("file://", ""),
+            type: "application/pdf",
+            name: file.name || "uploaded_file.pdf", 
+          });
+        }
 
-        // Replace the URL with your actual backend endpoint
-        const response = await axios.post("http://192.168.1.9:5000/api/healthcare/upload", formData, {
+        
+        if (text) {
+          formData.append("text", text);
+        }
+
+        
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        //backend url
+        const response = await axios.post("http://10.200.251.46:5000/api/healthcare/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
-          timeout: 15000, // 15 seconds timeout
+          timeout: 15000, 
         });
 
         console.log("Server Response:", response.data);
@@ -49,25 +60,25 @@ const Process = ({ route }) => {
         if (response.status === 200 && response.data?.summary) {
           setSummary(response.data.summary);
           console.log("Summary set in state:", response.data.summary);
-          navigation.navigate("Result", { summary: response.data.summary }); // Navigate to Result page
+          navigation.navigate("Result", { summary: response.data.summary }); // Result page
         } else {
           console.log("Unexpected response format:", response.data);
-          Alert.alert("Error", "Failed to extract summary from the file.");
+          Alert.alert("Error", "Failed to extract summary from the file or text.");
         }
       } catch (error) {
         console.error("Request Error:", error);
         const errorMessage =
           error.response?.data?.message ||
           error.response?.statusText ||
-          "An error occurred during file processing.";
-        Alert.alert("Error", `File processing failed: ${errorMessage}`);
+          "An error occurred during file or text processing.";
+        Alert.alert("Error", `Processing failed: ${errorMessage}`);
       } finally {
         setIsLoading(false);
       }
     };
 
-    extractAndSummarize();
-  }, [file, navigation]);
+    processData();
+  }, [file, text, navigation]);
 
   return (
     <View style={styles.container}>
@@ -75,7 +86,9 @@ const Process = ({ route }) => {
         <ActivityIndicator size="large" color={COLORS.green} />
       ) : (
         <Text style={styles.text}>
-          {"Summary retrieved .... Redirecting to Result Page, OOPs ! you are back here , go to Home page" || "Summary could not be retrieved. Please try again."}
+          {summary
+            ? "Summary retrieved. Redirecting to Result Page..."
+            : "Summary could not be retrieved. Please try again."}
         </Text>
       )}
     </View>

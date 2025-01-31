@@ -50,18 +50,7 @@ const FirstPage = ({ navigation }) => {
           </TouchableOpacity>
 
           
-          <TouchableOpacity
-            style={[styles.button, { backgroundColor: COLORS.white, marginTop: 10 }]}
-            onPress={() => navigation.navigate('HospitalIDAuth')}
-          >
-            <View style={styles.buttonContent}>
-              <Text style={[styles.buttonText, { color: COLORS.primary }]}>Sign Up with Hospital ID</Text>
-              <Image
-                source={require('../assets/images/registration/building-4-fill.png')} 
-                style={styles.icon}
-              />
-            </View>
-          </TouchableOpacity>
+          
         </View>
       </View>
 
@@ -69,8 +58,8 @@ const FirstPage = ({ navigation }) => {
       <View style={styles.bottomContainer}>
         <View style={styles.signInContainer}>
           <Text style={styles.signInText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-            <Text style={[styles.signInText, { color: COLORS.blue }]}>Sign In</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('PhoneAuth')}>
+            <Text style={[styles.signInText, { color: COLORS.blue }]}>Login !</Text>
           </TouchableOpacity>
         </View>
 
@@ -117,12 +106,12 @@ const styles = StyleSheet.create({
     lineHeight: 23,
   },
   buttonContainer: {
-    marginTop: 35,
+    marginTop: 23,
     width: '100%',
   },
   button: {
     width: '100%',
-    height: 50,
+    height: 53,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
@@ -134,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: 'bold',
     marginRight: 10,
   },
@@ -145,13 +134,13 @@ const styles = StyleSheet.create({
   },
   signInText: {
     color: COLORS.white,
-    fontSize: 14,
+    fontSize: 15,
   },
   termsText: {
     color: COLORS.white,
     fontSize: 12,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 14,
     lineHeight: 18,
   },
   icon: {

@@ -9,10 +9,10 @@ import SplashScreenComponent from './src/SplashScreenComponent.js';
 import OnboardingScreen from './src/OnboardingScreen.js';
 import FirstPage from './src/FirstPage.js';
 import PhoneAuth from './src/AuthScreens/PhoneAuth.js';
-import HospitalIDAuth from './src/AuthScreens/HospitalIDAuth.js';
+
 //import Dashboard from './src/AuthScreens/Dashboard.js';
 import RegisterPhone from './src/AuthScreens/RegisterPhone.js';
-import SignIn from './src/AuthScreens/SignIn.js';
+
 import HomePage from './src/HomeScreens/HomePage.js';
 import BillStatements from './src/BillScreens/BillStatements.js';
 import BookAppointments from './src/BookAppointments.js';
@@ -84,10 +84,7 @@ const App = () => {
           )}
           <Stack.Screen name="FirstPage" component={FirstPage} options={{headerShown: false}} />
           <Stack.Screen name="PhoneAuth" component={PhoneAuth} options={{headerShown: false}} />
-          <Stack.Screen name="HospitalIDAuth" component={HospitalIDAuth} options={{headerShown: false}}/>
           <Stack.Screen name="RegisterPhone" component={RegisterPhone} options={{headerShown: false}}/>
-          <Stack.Screen name="SignIn" component={SignIn} options={{headerShown: false}}/>
-
           <Stack.Screen name="HomePage" component={HomePage} options={{headerShown: false}} />
           <Stack.Screen name="BillStatements" component={BillStatements} options={{headerShown: false}} />
           <Stack.Screen name="BookAppointments" component={BookAppointments} options={{headerShown: false}} />

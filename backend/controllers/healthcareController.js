@@ -10,41 +10,57 @@ import { fileURLToPath } from "url";
 // Define __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-// Configure Multer to store files in the uploads directory
-/*const upload = multer({
-  dest: path.resolve(__dirname, "../uploads/"), // Use absolute path
-  limits: { fileSize: 10 * 1024 * 1024 }, // Optional: Set a file size limit (10 MB)
-});*/
 
 // Initialize Google Generative AI Client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Configure Multer to store files in the uploads directory
+const upload = multer({
+  dest: path.resolve(__dirname, "../uploads/"), // Use absolute path
+  limits: { fileSize: 10 * 1024 * 1024 }, // Optional: Set a file size limit (10 MB)
+});
 
 // Analyze Entities in a document and summarize using Gemini
 export async function uploadFileAndSummarize(req, res) {
   try {
     handleCors(req, res);
 
-    if (!req.file) {
-      return res.status(400).send({ message: "No file uploaded" });
+    // Check if the request contains a file or text
+    const { text } = req.body; // Extract text from the request body
+    const file = req.file; // Extract uploaded file (if any)
+
+    if (!file && !text) {
+      return res.status(400).send({ message: "No file or text provided for processing." });
     }
 
-    const filePath = req.file.path; // Path to the uploaded file
-    console.log("Uploaded file path:", filePath);
+    let extractedText = "";
 
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      console.error(`File not found: ${filePath}`);
-      return res.status(400).send({ message: "Uploaded file does not exist." });
+    // If a PDF file is provided, extract text from it
+    if (file) {
+      const filePath = file.path; // Path to the uploaded file
+      console.log("Uploaded file path:", filePath);
+
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.error(`File not found: ${filePath}`);
+        return res.status(400).send({ message: "Uploaded file does not exist." });
+      }
+
+      // Step 1: Parse PDF to extract text
+      extractedText = await extractTextFromPDF(filePath);
+
+      if (!extractedText || extractedText.trim() === "") {
+        return res.status(400).send({ message: "No valid text found in the PDF." });
+      }
+
+      console.log("Extracted Text from PDF:", extractedText);
     }
 
-    // Step 1: Parse PDF to extract text
-    const extractedText = await extractTextFromPDF(filePath);
-
-    if (!extractedText || extractedText.trim() === "") {
-      return res.status(400).send({ message: "No valid text found in the PDF." });
+    // If text is provided, use it directly
+    if (text) {
+      extractedText = text;
+      console.log("Text provided directly:", extractedText);
     }
-
-    console.log("Extracted Text:", extractedText);
 
     // Step 2: Analyze Entities using Google Healthcare NLP API
     const entities = await analyzeEntitiesUsingHealthcareNLP(extractedText);
@@ -66,7 +82,7 @@ export async function uploadFileAndSummarize(req, res) {
     console.log("Sending summary to frontend:", summary);
     res.status(200).json({ summary });
   } catch (error) {
-    console.error("Error in processing file:", error.message);
+    console.error("Error in processing file or text:", error.message);
     res.status(500).send({ message: "Internal Server Error" });
   }
 }
@@ -95,7 +111,7 @@ const analyzeEntitiesUsingHealthcareNLP = async (documentContent) => {
     if (response.ok) {
       const jsonResponse = await response.json();
       console.log("Google Healthcare NLP Response:", jsonResponse);
-    
+
       // Safely map and structure the entities from the response
       const entityMentions = jsonResponse.entityMentions?.map((mention) => ({
         id: mention.mentionId || "Unknown ID",
@@ -104,22 +120,22 @@ const analyzeEntitiesUsingHealthcareNLP = async (documentContent) => {
         linkedEntities: mention.linkedEntities?.map((entity) => entity.entityId || "Unknown Entity") || [],
         confidence: (mention.confidence || 0).toFixed(2), // Format confidence to 2 decimal places
       }));
-    
+
       const entities = jsonResponse.entities?.map((entity) => ({
         id: entity.entityId || "Unknown Entity ID",
         term: entity.preferredTerm || "Unknown Term",
         vocabulary: entity.vocabularyCodes || [],
       }));
-    
+
       console.log("Formatted Entity Mentions:", entityMentions);
       console.log("Formatted Entities:", entities);
-    
+
       // Combine and structure results for clear interpretation
       const formattedEntities = entityMentions.map((mention) => {
         const linkedEntitiesText = mention.linkedEntities.length
           ? `Linked Entities: ${mention.linkedEntities.join(", ")}`
           : "No linked entities";
-    
+
         return `
           - ID: ${mention.id}
           - Type: ${mention.type}
@@ -128,19 +144,18 @@ const analyzeEntitiesUsingHealthcareNLP = async (documentContent) => {
           - Confidence: ${mention.confidence}
         `;
       });
-    
+
       const structuredEntities = `
         Extracted Entities:
         ${formattedEntities.join("\n")}
       `;
-    
+
       console.log("Structured Entities for Gemini:", structuredEntities);
-    
+
       return structuredEntities; // Return the formatted and structured entities
     } else {
       throw new Error(`API request failed with status: ${response.status}`);
     }
-    
   } catch (error) {
     console.error("Error calling Google Healthcare NLP API:", error.message);
     throw new Error("Failed to analyze entities.");
@@ -150,7 +165,6 @@ const analyzeEntitiesUsingHealthcareNLP = async (documentContent) => {
 // Helper Function: Summarize text using Google Gemini
 const summarizeTextUsingGemini = async (structuredEntities) => {
   try {
-
     // Refined prompt for Gemini
     const prompt = `
       The following are detailed medical entities extracted from a patient's document. Each entity includes its type, description, linked medical concepts, and confidence levels:
@@ -165,7 +179,6 @@ const summarizeTextUsingGemini = async (structuredEntities) => {
     `;
 
     // Initialize the Gemini model
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Generate content using the refined prompt
@@ -175,9 +188,8 @@ const summarizeTextUsingGemini = async (structuredEntities) => {
     console.log("Gemini Summarization Response:", JSON.stringify(result, null, 2));
 
     // Extract summary content from response
-    
     const summary = result.response.candidates?.[0]?.content?.parts?.[0]?.text || "Summary not available.";
-    
+
     if (summary === "Summary not available.") {
       console.error("Failed to extract summary. Check the Gemini response format.");
     }
@@ -188,7 +200,6 @@ const summarizeTextUsingGemini = async (structuredEntities) => {
     throw new Error("Failed to generate summary.");
   }
 };
-
 
 // Sets up CORS headers to allow cross-origin requests
 const handleCors = (req, res) => {

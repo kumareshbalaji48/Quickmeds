@@ -1,45 +1,66 @@
-import fs from "fs";
-import PDFParser from "pdf2json"; 
+import { PdfReader } from "pdfreader";
+import fs from "fs/promises";
 
-// Helper function to clean and format the extracted text
+
 const formatExtractedText = (rawText) => {
-  // Replace sequences of missing spaces between words
-  const formattedText = rawText.replace(/([a-zA-Z])([A-Z])/g, "$1 $2");
   
-  // Replace other problematic patterns as needed (e.g., remove redundant newlines)
-  return formattedText.replace(/\s{2,}/g, " ").trim();
+  return rawText
+    .replace(/(\r\n|\n|\r)/gm, " ") 
+    .replace(/([a-zA-Z])([A-Z])/g, "$1 $2") 
+    .replace(/(\s{2,})/g, " ") 
+    .replace(/(\d+)([a-zA-Z])/g, "$1 $2") 
+    .replace(/([a-zA-Z])(\d+)/g, "$1 $2")
+    .trim();
 };
 
-
 const extractTextFromPDF = async (filePath) => {
-  return new Promise((resolve, reject) => {
-    const pdfParser = new PDFParser(this, 1);
-
+  try {
     
-    pdfParser.on("pdfParser_dataError", (errData) => {
-      console.error("Error parsing PDF:", errData.parserError);
-      reject(new Error("Failed to extract text from PDF."));
+    const pdfBuffer = await fs.readFile(filePath);
+    
+    return new Promise((resolve, reject) => {
+      const reader = new PdfReader();
+      const textItems = [];
+      let currentPage = 1;
+      let lastY = null;
+      let text = "";
+
+      reader.parseBuffer(pdfBuffer, (err, item) => {
+        if (err) {
+          console.error("PDF parsing error:", err);
+          reject(new Error("Failed to parse PDF file"));
+          return;
+        }
+
+        if (!item) {
+          
+          const fullText = textItems.join("\n");
+          resolve(formatExtractedText(fullText));
+          return;
+        }
+
+        if (item.page) {
+          
+          currentPage = item.page;
+        }
+
+        if (item.text) {
+          
+          if (lastY !== item.y) {
+            
+            textItems.push("\n");
+            lastY = item.y;
+          }
+          
+          
+          textItems.push(item.text);
+        }
+      });
     });
-
-    
-    pdfParser.on("pdfParser_dataReady", (pdfData) => {
-      try {
-        
-        const rawText = pdfParser.getRawTextContent();
-
-        
-        const cleanedText = formatExtractedText(rawText);
-
-        resolve(cleanedText); 
-      } catch (error) {
-        console.error("Error processing PDF data:", error.message);
-        reject(new Error("Failed to extract text from PDF."));
-      }
-    });
-
-    
-    pdfParser.loadPDF(filePath);
-  });
+  } catch (error) {
+    console.error("File reading error:", error);
+    throw new Error("Failed to read PDF file");
+  }
 };
 
 export default extractTextFromPDF;
