@@ -78,7 +78,7 @@ export default function HomePage() {
                   ${showButton ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
               >
                 <Play className="inline-block mr-2 w-6 h-6" />
-                Start Token System
+                Start Your Day
               </button>
             </Link>
           </div>

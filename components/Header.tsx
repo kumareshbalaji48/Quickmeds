@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, User, LogOut } from "lucide-react"
+import { Menu, User, LogOut, Newspaper, CalendarRangeIcon, UserIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -42,12 +42,20 @@ export default function Header() {
             <nav className="mt-8 space-y-4">
               <Link href="/appointments" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-lg">
+                  <CalendarRangeIcon className="mr-2 h-5 w-5" />
                   Appointments
                 </Button>
               </Link>
               <Link href="/profile" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-lg">
+                  <UserIcon className="mr-2 h-5 w-5" />
                   Profile
+                </Button>
+              </Link>
+              <Link href="/newsletters" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start text-lg">
+                  <Newspaper className="mr-2 h-5 w-5" />
+                  Newsletters
                 </Button>
               </Link>
             </nav>
