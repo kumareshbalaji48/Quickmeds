@@ -1,46 +1,53 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Image,
-} from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
+import React, { useState } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
+import { Appbar, Card, Text, Searchbar, ActivityIndicator, useTheme, Avatar } from 'react-native-paper';
+
+const COLORS = {
+  primary: "#020E22",
+  white: "#FFFFFF",
+  gray: "#2A2A2A",
+  blue: "#4F73DF",
+  green: "#157A6E",
+  red: "#B53737",
+  accent: "#0FEDED",
+  cardBlue: "#293C7A",
+  cardGreen: "#084C2E",
+  cardRed: "#7A271A",
+  cardOrange: "#772917",
+  lightGray: "#1E2D44",
+  transparentWhite: "rgba(255, 255, 255, 0.7)",
+};
 
 const doctors = [
   {
     id: "1",
-    name: "Dr. Patricia Ahoy",
+    name: "Dr. Santosh",
     specialty: "Ear, Nose & Throat specialist",
-    price: "INR. 120.00",
+    price: "IDR. 120.000",
     rating: 4.5,
-    image: require("../../assets/doctor1.png"),
-    isAvailable: false,
+    isAvailable: true,
   },
   {
     id: "2",
-    name: "Dr. Stone Gaze",
+    name: "Dr. Indira Varma",
     specialty: "Ear, Nose & Throat specialist",
     price: "INR. 120.00",
-    rating: 4.5,
+    rating: 4,
     image: require("../../assets/doctor2.png"),
     isAvailable: false,
   },
   {
     id: "3",
-    name: "Dr. Wahyu",
+    name: "Dr. Kumaresh",
     specialty: "Ear, Nose & Throat specialist",
     price: "INR. 120.00",
-    rating: 4.5,
+    rating: 2.5,
     image: require("../../assets/doctor3.png"),
     isAvailable: true,
   },
   {
     id: "4",
-    name: "Dr. Reza Razor",
+    name: "Dr. Butti Bal",
     specialty: "Ear, Nose & Throat specialist",
     price: "INR. 120.00",
     rating: 4.5,
@@ -49,141 +56,100 @@ const doctors = [
   },
   {
     id: "5",
-    name: "Dr. Jacky Cun",
+    name: "Dr. Jhenny",
     specialty: "Ear, Nose & Throat specialist",
     price: "INR. 120.00",
-    rating: 4.5,
+    rating: 3,
     image: require("../../assets/doctor5.png"),
     isAvailable: false,
   },
 ];
 
-const DepartmentPage = ({ navigation }) => {
-  const [doctors, setDoctors] = useState([
-    {
-      id: "1",
-      name: "Dr. Patricia Ahoy",
-      specialty: "Ear, Nose & Throat specialist",
-      price: "INR. 120.00",
-      rating: 4.5,
-      image: require("../../assets/doctor1.png"),
-      isAvailable: false,
-    },
-    {
-      id: "2",
-      name: "Dr. Stone Gaze",
-      specialty: "Ear, Nose & Throat specialist",
-      price: "INR. 120.00",
-      rating: 4.5,
-      image: require("../../assets/doctor2.png"),
-      isAvailable: false,
-    },
-    {
-      id: "3",
-      name: "Dr. Wahyu",
-      specialty: "Ear, Nose & Throat specialist",
-      price: "INR. 120.00",
-      rating: 4.5,
-      image: require("../../assets/doctor3.png"),
-      isAvailable: true,
-    },
-    {
-      id: "4",
-      name: "Dr. Reza Razor",
-      specialty: "Ear, Nose & Throat specialist",
-      price: "INR. 120.00",
-      rating: 4.5,
-      image: require("../../assets/doctor4.png"),
-      isAvailable: true,
-    },
-    {
-      id: "5",
-      name: "Dr. Jacky Cun",
-      specialty: "Ear, Nose & Throat specialist",
-      price: "INR. 120.00",
-      rating: 4.5,
-      image: require("../../assets/doctor5.png"),
-      isAvailable: false,
-    },
-  ]);
+const ENT = ({ navigation }) => {
+  const theme = useTheme();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Fetch doctors from backend
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const response = await fetch("https://your-backend-url.com/doctors");
-        const data = await response.json();
-        setDoctors(data); // Assume the API returns a list of doctors
-      } catch (error) {
-        console.error("Error fetching doctors:", error);
-      }
-    };
-
-    fetchDoctors();
-  }, []);
-
-  const renderDoctor = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.doctorItem,
-        item.isAvailable ? styles.availableDoctor : styles.unavailableDoctor,
-      ]}
-      onPress={() => {
-        if (item.isAvailable) {
-          navigation.navigate("DoctorDetails", { doctor: item });
-        }
-      }}
-      disabled={!item.isAvailable}
-    >
-      <Image source={item.image} style={styles.doctorImage} />
-      <View style={styles.doctorInfo}>
-        <Text style={styles.doctorName}>{item.name}</Text>
-        <Text style={styles.doctorSpecialty}>{item.specialty}</Text>
-        <Text style={styles.doctorPrice}>{item.price}</Text>
-      </View>
-      <View style={styles.doctorRatingContainer}>
-        <Icon name="star" size={16} color="#FFA500" />
-        <Text style={styles.doctorRating}>{item.rating}</Text>
-      </View>
-    </TouchableOpacity>
+  // Filter doctors based on search query
+  const filteredDoctors = doctors.filter(doctor =>
+    doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={24} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Ear, Nose & Throat</Text>
-      </View>
-
-      {/* Search and Filters */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBox}>
-          <Icon
-            name="search"
-            size={20}
-            color="#a0a0a0"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            placeholder="Search Doctor"
-            placeholderTextColor="#a0a0a0"
-            style={styles.searchInput}
-          />
+  // Render each doctor item
+  const renderDoctor = ({ item }) => (
+    <Card
+      style={[styles.card, { backgroundColor: COLORS.gray }]}
+      onPress={() => navigation.navigate('Makeappointment')}
+    >
+      <Card.Content style={styles.cardContent}>
+        <Avatar.Image 
+          size={48} 
+          source={item.image || require("../../assets/doctor4.png")} 
+          style={styles.avatar}
+        />
+        <View style={styles.infoContainer}>
+          <Text variant="titleMedium" style={styles.doctorName}>
+            {item.name}
+          </Text>
+          <Text variant="bodyMedium" style={styles.specialization}>
+            {item.specialty}
+          </Text>
+          <Text variant="bodySmall" style={styles.price}>
+            Price: {item.price}
+          </Text>
+          <Text variant="bodySmall" style={styles.rating}>
+            Rating: {item.rating} ⭐
+          </Text>
+          <Text 
+            variant="bodySmall" 
+            style={[styles.availability, { color: item.isAvailable ? 'green' : 'red' }]}
+          >
+            {item.isAvailable ? 'Available' : 'Not Available'}
+          </Text>
         </View>
-        <TouchableOpacity style={styles.filterButton}>
-          <Icon name="filter" size={20} color="#ffffff" />
-        </TouchableOpacity>
-      </View>
+      </Card.Content>
+    </Card>
+  );
+  
+  
 
-      {/* Doctors List */}
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.loadingText}>Loading doctors...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.container, { backgroundColor: COLORS.primary }]}>
+      <Appbar.Header>
+        <Appbar.BackAction onPress={() => navigation.goBack()} />
+        <Appbar.Content title="ENT Department" />
+        <Appbar.Action icon="hospital-building" />
+      </Appbar.Header>
+
+      <Searchbar
+        placeholder="Search doctors..."
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        style={styles.searchBar}
+        inputStyle={styles.searchInput}
+        elevation={2}
+      />
+
       <FlatList
-        data={doctors}
+        data={filteredDoctors}
         renderItem={renderDoctor}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <Text style={[styles.emptyText, { color: theme.colors.onSurface }]}>
+            No matches found for "{searchQuery}"
+          </Text>
+        }
       />
     </View>
   );
@@ -192,115 +158,73 @@ const DepartmentPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#001F3F",
-    padding: 16,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  headerTitle: {
-    color: "#ffffff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  searchBox: {
+  loadingContainer: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#002A5C",
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
   },
-  searchIcon: {
-    marginRight: 8,
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  searchBar: {
+    margin: 16,
+    borderRadius: 8,
   },
   searchInput: {
-    flex: 1,
-    color: "#ffffff",
+    fontSize: 16,
   },
-  filterButton: {
-    marginLeft: 8,
-    backgroundColor: "#4a90e2",
-    borderRadius: 8,
-    padding: 8,
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    elevation: 2,
+    backgroundColor:COLORS.blue,
   },
-  filtersRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 16,
   },
-  filterOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#002A5C",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+  avatar: {
+    backgroundColor: '#e3f2fd',
   },
-  filterText: {
-    color: "#ffffff",
-    fontSize: 14,
-    marginRight: 4,
-  },
-  listContainer: {
-    paddingBottom: 24,
-  },
-  doctorItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#002A5C",
-    borderRadius: 8,
-    padding: 20,
-    marginBottom: 12,
-  },
-  availableDoctor: {
-    opacity: 1, // Fully visible
-  },
-  unavailableDoctor: {
-    opacity: 0.5, // Faded look for unavailable doctors
-  },
-  doctorImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-  },
-  doctorInfo: {
+  infoContainer: {
     flex: 1,
   },
   doctorName: {
-    color: "#ffffff",
+    fontWeight: '600',
+    marginBottom: 4,
     fontSize: 16,
-    fontWeight: "500",
   },
-  doctorSpecialty: {
-    color: "#a0a0a0",
+  specialization: {
+    color: '#666',
     fontSize: 14,
+    marginBottom: 4,
   },
-  doctorPrice: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "500",
+  price: {
+    fontSize: 12,
+    color: '#888',
   },
-  doctorRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  rating: {
+    fontSize: 12,
+    color: '#888',
   },
-  doctorRating: {
-    color: "#ffffff",
-    fontSize: 14,
-    marginLeft: 4,
+  availability: {
+    fontSize: 12,
+  
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 24,
+    fontSize: 16,
   },
 });
 
-export default DepartmentPage;
+export default ENT;
