@@ -1,142 +1,111 @@
 "use client"
 
-import { useState, useRef } from "react"
-import Image from "next/image"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Camera } from "lucide-react"
-import { User } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import BackgroundVideo from "@/components/BackgroundVideo"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
+import bcrypt from "bcryptjs"
 
-export default function ProfileSection() {
-  const [profile, setProfile] = useState({
-    name: "",
-    specialization: "",
-    experience: "",
-    about: "",
-  })
-  const [photo, setPhoto] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export default function RegisterPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [error, setError] = useState("")
+  const router = useRouter()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value })
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Updated profile:", profile)
-  }
+    setError("")
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPhoto(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+    if (password !== confirmPassword) {
+      setError("Passwords do not match")
+      return
+    }
+
+    try {
+      // Create user with email and password
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+
+      // Hash the password
+      const salt = await bcrypt.genSalt(10)
+      const hashedPassword = await bcrypt.hash(password, salt)
+
+      // Store additional user data in Firestore
+      await setDoc(doc(db, "doctors", user.uid), {
+        email: user.email,
+        hashedPassword: hashedPassword,
+        // Add any additional fields you want to store
+      })
+
+      // Redirect to dashboard
+      router.push("/")
+    } catch (error) {
+      setError("Failed to create an account. Please try again.")
+      console.error(error)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex justify-center">
-        <div className="relative w-32 h-32">
-          {photo ? (
-            <Image
-              src={photo || "/placeholder.svg"}
-              alt="Profile"
-              layout="fill"
-              objectFit="cover"
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="h-16 w-16 text-gray-400" />
+    <div className="min-h-screen flex items-center justify-center">
+      <BackgroundVideo videoSrc="/register-background.mp4" />
+      <Card className="w-full max-w-md bg-white bg-opacity-90">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Doctor Registration</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleRegister} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="doctor@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
-          )}
-          <Button
-            type="button"
-            variant="secondary"
-            size="icon"
-            className="absolute bottom-0 right-0"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <Camera className="h-4 w-4" />
-          </Button>
-          <Input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handlePhotoUpload} />
-        </div>
-      </div>
-      <div className="relative">
-        <Input
-          id="name"
-          name="name"
-          value={profile.name}
-          onChange={handleChange}
-          className="w-full p-4 bg-white border-2 border-black-200 rounded-lg focus:border-black-500 transition-all duration-300"
-        />
-        <Label
-          htmlFor="name"
-          className={`absolute left-4 top-4 transition-all duration-300 ${profile.name ? "text-xs -top-2 bg-white px-1" : "text-gray-500"
-            }`}
-        >
-          Name
-        </Label>
-      </div>
-      <div className="relative">
-        <Input
-          id="specialization"
-          name="specialization"
-          value={profile.specialization}
-          onChange={handleChange}
-          className="w-full p-4 bg-white border-2 border-black-200 rounded-lg focus:border-black-500 transition-all duration-300"
-        />
-        <Label
-          htmlFor="specialization"
-          className={`absolute left-4 top-4 transition-all duration-300 ${profile.specialization ? "text-xs -top-2 bg-white px-1" : "text-gray-500"
-            }`}
-        >
-          Specialization
-        </Label>
-      </div>
-      <div className="relative">
-        <Input
-          id="experience"
-          name="experience"
-          value={profile.experience}
-          onChange={handleChange}
-          className="w-full p-4 bg-white border-2 border-black-200 rounded-lg focus:border-black-500 transition-all duration-300"
-        />
-        <Label
-          htmlFor="experience"
-          className={`absolute left-4 top-4 transition-all duration-300 ${profile.experience ? "text-xs -top-2 bg-white px-1" : "text-gray-500"
-            }`}
-        >
-          Experience
-        </Label>
-      </div>
-      <div className="relative">
-        <Textarea
-          id="about"
-          name="about"
-          value={profile.about}
-          onChange={handleChange}
-          className="w-full p-4 bg-white border-2 border-black-200 rounded-lg focus:border-black-500 transition-all duration-300"
-          rows={4}
-        />
-        <Label
-          htmlFor="about"
-          className={`absolute left-4 top-4 transition-all duration-300 ${profile.about ? "text-xs -top-2 bg-white px-1" : "text-gray-500"
-            }`}
-        >
-          About
-        </Label>
-      </div>
-      <Button type="submit" className="w-full bg-gray-400 hover:bg-gray-500 text-white text-lg py-3">
-        Update Profile
-      </Button>
-    </form>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+            {error && <p className="text-red-500">{error}</p>}
+            <Button type="submit" className="w-full">
+              Register
+            </Button>
+          </form>
+          <div className="mt-4 text-center">
+            <Link href="/login" className="text-blue-600 hover:underline">
+              Already have an account? Log in
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

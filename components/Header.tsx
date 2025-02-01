@@ -1,26 +1,29 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Menu, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuthState } from "react-firebase-hooks/auth"
+import { auth } from "@/lib/firebase"
+import { signOut } from "firebase/auth"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, loading] = useAuthState(auth)
   const router = useRouter()
 
-  useEffect(() => {
-    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true")
-  }, [])
-
-  const handleLogout = () => {
-    localStorage.removeItem("isLoggedIn")
-    setIsLoggedIn(false)
-    router.push("/login")
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      router.push("/login")
+    } catch (error) {
+      console.error("Error signing out: ", error)
+    }
   }
 
   return (
@@ -54,14 +57,21 @@ export default function Header() {
           Doctor Dashboard
         </Link>
       </div>
-      {isLoggedIn && (
+      {!loading && user && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <User className="h-6 w-6" />
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <Avatar>
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
+                <AvatarFallback>{user.email ? user.email[0].toUpperCase() : "U"}</AvatarFallback>
+              </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => router.push("/profile")}>
+              <User className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
