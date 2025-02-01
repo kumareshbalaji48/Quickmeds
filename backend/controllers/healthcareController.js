@@ -12,7 +12,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Initialize Google Generative AI Client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI =  new GoogleGenerativeAI("AIzaSyACMtNwHUMbGt_SoTuttjcQ7K0RSyxFTIM");
+
 
 // Configure Multer to store files in the uploads directory
 const upload = multer({
@@ -26,8 +27,8 @@ export async function uploadFileAndSummarize(req, res) {
     handleCors(req, res);
 
     // Check if the request contains a file or text
-    const { text } = req.body; // Extract text from the request body
-    const file = req.file; // Extract uploaded file (if any)
+    const { text } = req.body;
+    const file = req.file;
 
     if (!file && !text) {
       return res.status(400).send({ message: "No file or text provided for processing." });

@@ -34,12 +34,13 @@ import Dermato from "./src/AppointmentScreens/Dermato.js";
 import DoctorsList from "./src/AppointmentScreens/DoctorsList.js";
 import DoctorDetails from "./src/AppointmentScreens/DoctorDetails.js";
 import AppointmentConfirmation from "./src/AppointmentScreens/AppointmentConfirmation.js";
-
+import Assistant from './src/NlpScreens/Assistant.js';
 
 import { Buffer } from 'buffer';
 global.Buffer = Buffer;
 
 import process from 'process';
+
 global.process = process;
 
 
@@ -97,6 +98,7 @@ const App = () => {
           <Stack.Screen name="Test" component={Test} options={{headerShown: false}} />
           <Stack.Screen name="BillPdf" component={BillPdf} options={{headerShown: false}} />
           <Stack.Screen name="Process" component={Process} options={{headerShown: false}} />
+          <Stack.Screen name="Assistant" component={Assistant} options={{headerShown: false}} />
           <Stack.Screen
             name="AppointmentPage"
             component={AppointmentPage}

@@ -11,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Text, Button, Card, IconButton, TextInput } from "react-native-paper";
+import { Text, Button, Card, IconButton, ToggleButton } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 import { useNavigation } from "@react-navigation/native";
 
@@ -29,22 +29,18 @@ const COLORS = {
   black: "#000000", 
 };
 
-const MAX_CHARS = 2000;
-const MAX_FILE_SIZE = 10 * 1024 * 1024; 
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const NlpSummarizer = () => {
   const [file, setFile] = useState(null);
-  const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const [language, setLanguage] = useState("ta"); // Default: Tamil
   const navigation = useNavigation();
   const scrollViewRef = useRef(null);
 
   const handleFileUpload = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf",
-      });
+      const result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
 
       if (result.canceled) {
         Alert.alert("Upload Cancelled", "No file was selected.");
@@ -74,23 +70,14 @@ const NlpSummarizer = () => {
     }
   };
 
-  const handleTextInput = (inputText) => {
-    if (inputText.length <= MAX_CHARS) {
-      setText(inputText);
-    }
-  };
-
   const handleGenerateSummary = () => {
-    if (!file && !text.trim()) {
-      Alert.alert("Error", "Please upload a file or enter text to generate a summary.");
+    if (!file) {
+      Alert.alert("Error", "Please upload a file to generate a summary.");
       return;
     }
 
     setIsLoading(true);
-    navigation.navigate("Process", {
-      file: file,
-      text: text,
-    });
+    navigation.navigate("Process", { file });
   };
 
   return (
@@ -115,15 +102,11 @@ const NlpSummarizer = () => {
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Media Upload</Text>
                 {file && (
-                  <IconButton
-                    mode="contained-tonal"
-                    icon="close-box"
-                    onPress={() => setFile(null)}
-                  />
+                  <IconButton mode="contained-tonal" icon="close-box" onPress={() => setFile(null)} />
                 )}
               </View>
 
-              <Text style={styles.subText}>Add your documents here...</Text>
+              <Text style={styles.subText}>Upload your documents here...</Text>
 
               <View style={styles.uploadSection}>
                 <Image
@@ -139,43 +122,33 @@ const NlpSummarizer = () => {
                 </Text>
               </View>
 
-              <Text style={styles.supportText}>
-                Only supports .pdf files (Max 10 MB).
-              </Text>
+              <Text style={styles.supportText}>Only supports .pdf files (Max 10 MB).</Text>
 
-              <Text style={styles.orText}>OR</Text>
+              <Text style={styles.orText}>ALSO</Text>
 
-              <View style={[
-                styles.textInputWrapper,
-                isFocused && styles.textInputWrapperFocused
-              ]}>
-                <TextInput
-                  mode="flat"
-                  multiline
-                  numberOfLines={6}
-                  style={styles.input}
-                  placeholder="Enter medical report text..."
-                  placeholderTextColor={COLORS.transparentWhite}
-                  value={text}
-                  onChangeText={handleTextInput}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  maxLength={MAX_CHARS}
-                  theme={{
-                    colors: {
-                      primary: COLORS.blue,
-                      text: COLORS.white,
-                      placeholder: COLORS.transparentWhite,
-                    }
-                  }}
-                />
-              </View>
-              
-              {text.length > 0 && (
-                <Text style={styles.characterCount}>
-                  {text.length}/{MAX_CHARS}
-                </Text>
-              )}
+              <View style={styles.featureSection}>
+  <Text style={styles.featureText}>
+    Experience <Text style={styles.highlight}>AI-powered Assistant</Text> with  
+    <Text style={styles.highlight}> Text-to-Speech </Text> &  
+    <Text style={styles.highlight}> Multilingual Support</Text>.
+  </Text>
+  <ToggleButton.Row 
+    onValueChange={setLanguage}  
+    value={language}
+  >
+    <ToggleButton 
+      icon="translate" 
+      value="en" 
+      style={styles.toggleButton} 
+    />
+    <ToggleButton 
+      icon="alpha-t-box" 
+      value="hi" 
+      style={styles.toggleButton} 
+    />
+  </ToggleButton.Row>
+</View>
+
             </Card.Content>
           </Card>
 
@@ -200,6 +173,13 @@ const NlpSummarizer = () => {
 };
 
 const styles = StyleSheet.create({
+    toggleButton: {
+      backgroundColor: COLORS.black, 
+      borderRadius: 15, 
+      borderWidth: 1, 
+      borderColor: COLORS.transparentWhite, 
+    },
+  
   container: {
     flex: 1,
     backgroundColor: COLORS.primary,
@@ -214,7 +194,6 @@ const styles = StyleSheet.create({
     borderBottomColor: COLORS.transparentWhite,
   },
   headerText: {
-    fontFamily: Platform.select({ ios: "System", android: "monospace" }),
     fontWeight: "bold",
     fontSize: 28,
     color: COLORS.white,
@@ -237,7 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     color: COLORS.blue,
-    fontFamily: Platform.select({ ios: "System", android: "system-ui" }),
   },
   subText: {
     fontSize: 18,
@@ -250,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 23,
     alignItems: "center",
-    marginBottom: 18,
+    marginBottom: 22,
     borderWidth: 2,
     borderColor: COLORS.cardBackground,
     borderStyle: "dashed",
@@ -274,39 +252,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.black,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 18,
   },
   orText: {
     fontSize: 18,
-    fontWeight: "bold",
     color: COLORS.black,
     textAlign: "center",
     marginBottom: 14,
   },
-  textInputWrapper: {
-    borderRadius: 8,
-    overflow: 'hidden',
-    backgroundColor: COLORS.cardBackground,
-    marginBottom: 5,
-    borderWidth: 0.8,
-    borderColor: COLORS.transparentWhite,
+  featureSection: {
+    alignItems: "center",
   },
-  textInputWrapperFocused: {
-    borderColor: COLORS.transparentWhite,
-  },
-  input: {
-    backgroundColor: 'transparent',
-    minHeight: 120,
+  featureText: {
     fontSize: 16,
-    textAlignVertical: 'top',
-    color: COLORS.white,
+    color: COLORS.gray,
+    textAlign: "center",
+    marginBottom: 10,
   },
-  characterCount: {
-    fontSize: 14,
-    color: COLORS.transparentWhite,
-    textAlign: 'right',
-    marginBottom: 15,
-    marginTop: 2,
+  highlight: {
+    
+    color: COLORS.green,
   },
   generateButton: {
     backgroundColor: COLORS.blue,
