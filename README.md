@@ -1,102 +1,141 @@
 # QuickMeds
-
-Welcome to **QuickMeds**, a React Native Expo project aimed at building a comprehensive patient assistive application. This README provides instructions and important information for setting up and running the application during its initial development phase.
+Welcome to **QuickMeds**, a React Native Expo project aimed at building a **comprehensive patient assistive application**. This README provides instructions and essential information for setting up and running the application during its **initial development phase**.
 
 ---
-
-## Get Started
-
+## 🚀 Get Started
 ### Prerequisites
-   
-   Follow the eas documentation to install the necessary dependencies , also the platform is a expo development build 
-1. **Install npx expo-cli**: Ensure you have `npx expo-cli` installed. You can do this with:
-   ```bash
-   npm install -g expo-cli
-   ```
+- Follow the **Expo Application Services (EAS)** documentation to install necessary dependencies.
+- The platform is an **Expo Development Build**, consist of various Expo libraries.
 
-2. **Login with EAS Credentials**: Log in to your Expo account:
-   ```bash
-   npx expo login
-   ```
+### Install `npx expo-cli`
+Ensure you have `npx expo-cli` installed:
+```sh
+npm install -g expo-cli
+```
 
-3. **Build the Platform for Android**: To generate an APK for the emulator or physical device, use the command:
-   ```bash
-   npx expo run:android
-   ```
-   After the build completes, download the APK and install it on your emulator or physical device.
+### Login with EAS Credentials
+Log in to your Expo account:
+```sh
+npx expo login
+```
+
+### Build the Platform for Android
+To generate an APK for the emulator or physical device:
+```sh
+npx expo run:android
+```
+After the build completes, download the APK and install it on your **emulator or physical device**.
 
 ### Install Dependencies
-
 After cloning the repository, run:
-```bash
+```sh
 npm install
 ```
 
 ### Run the App
-
-Once the APK is installed on your emulator or device, start the development server with:
-```bash
+Once the APK is installed on your **emulator or device**, start the development server with:
+```sh
 npx expo start
 ```
 
 ---
+## 📌 Features Overview
+### ✅ **Sign-In with Phone Number**
+- **Status**: Fully functional.
+- **Details**: Uses **Firebase Authentication** for phone-based login.
+- **Test Credentials**: Since the project is on the Firebase Free (Spark) plan, use the following for development:
+  - **Phone Number**: +911234567890
+  - **Password**: 123456
 
-## Development Notes
+### 📅 **Book Appointment**
+- **Status**: completed.
+- **Details**:
+  - The appointment feature requires the **user to be in the specified geolocation** to access it.
+  - The geolocation check is performed using **latitude and longitude** specified in `src/BookAppointment.js`.
+  - Ensure you **edit the hospital location** field in the code to reflect the correct coordinates.
+  - This ensures a seamless booking experience while maintaining accuracy in **hospital-based location constraints**.
 
-This project is currently in its **initial development phase**. Below are the key features and their progress:
+### 💳 **Medical Bill & History Management**
+- **Status**: Backend implementation in progress.
+- **Details**:
+  - Users can **view and manage their medical bill history** within the app.
+  - Secure storage of **billing data** for easy reference.
+  - Integration with Firebase for **cloud-based storage and retrieval**.
 
-### Features Overview
+### 📜 **NLP-Based Medical Summarizer**
+- **Status**: Completed.
+- **Details**:
+  - Requires **setting up a billing account in Google Cloud Platform (GCP)**.
+  - Create a **service account** for the project after enabling **Cloud Healthcare NLP**.
+  - The backend processes the uploaded **medical reports** and provides a **layman-friendly summary**.
+  - **GCP Function Guide**: [How to Run a GCP Function](https://cloud.google.com/functions/docs/quickstart)
+  - Setup Steps:
+    1. Enable **Cloud Healthcare NLP API** in GCP.
+    2. Create **Service Account** and download credentials.
+    3. Deploy backend using Node.js (steps below).
 
-1. **Sign-In with Phone Number**:
-   - **Status**: Fully functional.
-   - **Details**: Currently uses Firebase for authentication.
-   - **Test Credentials**: Since the project is on the Firebase Free (Spark) plan, use the following test credentials for development:
-     - Phone Number: `+911234567890`
-     - Password: `123456`
-
-2. **Book Appointment**:
-   - **Status**: Frontend completed.
-   Under the BookAppointment.js file , there is a field "hospitallocation" where the latitude and longitude must be changed according to the hospital location/user location for accessing the AppointmentScreens
-   - **Details**: Integration with the web interface for live appointment booking is not yet implemented.
-
-3. **NLP-Based Medical Summarizer**:
-   - **Status**: Frontend completed.
-   - **Details**: Google Cloud Healthcare API setup is complete, and backend implementation is in its final stages.
-
-4. **Medical Bill and History Management**:
-   - **Status**: Backend implementation in progress.
-   - **Details**: Bill records and medical history features are in active development.
-
----
-
-## Development Environment
-
-- **Mobile App**: React Native with Expo Dev Build
-- **Backend**: Firebase
-- **Editor**: Visual Studio Code
-- **Emulator**: Android Studio for testing
-
----
-
-## Known Limitations
-
-- **Firebase Blaze Plan**: The project currently uses the Free (Spark) plan. This limits scalability and functionality for advanced testing.
-- **Feature Completion**:
-  - Book Appointment: Frontend done; backend integration pending.
-  - NLP Summarizer: Cloud setup complete; backend nearing completion.
+### 🤖 **AI Chatbot (Gemini Integration)**
+- **Status**: Implementation done .
+- **Details**:
+  - The chatbot feature requires setting up **Google Gemini API**.
+  - This allows users to **ask questions about their medical summaries** for better understanding.
+  - Requires API key integration and secure request handling.
 
 ---
-
-## Future Plans
-
-- Fully integrate live appointment booking with web interface.
-- Complete backend implementation for all features.
-- Upgrade to Firebase Blaze Plan for enhanced functionality.
-- Expand feature set to include push notifications and detailed analytics.
+## 🛠 **Setting Up Development Environment**
+- Ensure your system meets the **Node.js and Firebase CLI requirements**.
+- Clone the repository and navigate to the backend folder:
+```sh
+cd src/backend
+```
+- Install dependencies:
+```sh
+npm install
+```
+- Run the backend service:
+```sh
+node app.js
+```
 
 ---
+## 📲 **Expo Development Build Setup**
+Since the application requires **advanced Expo libraries**, ensure your setup includes:
+- **Expo Libraries Used**: `expo-speech`, `expo-share`, `expo-print`, `expo-location`, etc.
+- **Install EAS CLI**:
+```sh
+npx expo install -g eas-cli
+```
+- **Login to EAS**:
+```sh
+eas login
+```
+- **Build Platform for Android**:
+```sh
+eas build -p android
+```
+- **Use the generated APK** to run the application.
 
-## Community
+📖 **Useful References**:
+- [EAS Documentation](https://docs.expo.dev/eas/)
+- [Expo Development Documentation](https://docs.expo.dev/development/build/)
 
-For any questions or contributions, feel free to join the discussion or raise issues in the repository. Stay tuned for updates as we continue to develop **QuickMeds** into a robust and comprehensive healthcare solution.
+---
+## 🚧 **Known Limitations**
+- **Firebase Free (Spark) Plan**: The project is currently limited in scalability due to the **Spark Plan**.
+- **Feature Completion Status**:
+  - **Book Appointment**: Frontend complete; backend integration pending.
+  - **NLP Summarizer**: Cloud setup complete; backend nearing completion.
+
+---
+## 🌟 **Future Plans**
+- **Fully integrate** live appointment booking with dynamic thresholds for government hospitals is planned eith Doctor's web interface.
+- **Complete backend** implementation for all features.
+- **Upgrade to Firebase Blaze Plan** for enhanced scalability.
+- **Expand feature set** to include push notifications and analytics.
+
+---
+## 👥 **Community & Contributions**
+For questions, feedback, or contributions, feel free to **join the discussion** or raise issues in the repository.
+
+Stay tuned as we continue to develop **QuickMeds** into a **robust and comprehensive healthcare solution**! 🚀
 
