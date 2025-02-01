@@ -1,34 +1,35 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import BackgroundVideo from "@/components/BackgroundVideo"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState("")
-    const router = useRouter()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const router = useRouter();
 
     const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError("")
+        e.preventDefault();
+        setError("");
 
         try {
-            await signInWithEmailAndPassword(auth, email, password)
-            router.push("/")
+            await signInWithEmailAndPassword(auth, email, password);
+
+            router.push("/");
         } catch (error) {
-            setError("Failed to log in. Please check your credentials.")
-            console.error(error)
+            setError("Failed to log in. Please check your credentials.");
+            console.error(error);
         }
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center">
@@ -73,6 +74,5 @@ export default function LoginPage() {
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }
-

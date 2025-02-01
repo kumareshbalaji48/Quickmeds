@@ -1,57 +1,65 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import BackgroundVideo from "@/components/BackgroundVideo"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
-import { auth, db } from "@/lib/firebase"
-import bcrypt from "bcryptjs"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BackgroundVideo from "@/components/BackgroundVideo";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import bcrypt from "bcryptjs";
 
 export default function RegisterPage() {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [confirmPassword, setConfirmPassword] = useState("")
-    const [error, setError] = useState("")
-    const router = useRouter()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [error, setError] = useState("");
+    const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError("")
+        e.preventDefault();
+        setError("");
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match")
-            return
+            setError("Passwords do not match");
+            return;
         }
 
         try {
             // Create user with email and password
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-            const user = userCredential.user
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
             // Hash the password
-            const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash(password, salt)
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Store additional user data in Firestore
-            await setDoc(doc(db, "doctors", user.uid), {
+            // Store credentials in Firestore
+            await setDoc(doc(db, "users", "hospital", user.uid, "credentials"), {
                 email: user.email,
-                hashedPassword: hashedPassword,
-                // Add any additional fields you want to store
-            })
+                hashedPassword,
+                uid: user.uid,
+            });
+
+            // Store initial empty details in Firestore
+            await setDoc(doc(db, "users", "hospital", user.uid, "details"), {
+                name: "",
+                specialization: "",
+                experience: "",
+                about: "",
+            });
 
             // Redirect to dashboard
-            router.push("/")
+            router.push("/");
         } catch (error) {
-            setError("Failed to create an account. Please try again.")
-            console.error(error)
+            setError("Failed to create an account. Please try again.");
+            console.error(error);
         }
-    }
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center">
@@ -106,6 +114,5 @@ export default function RegisterPage() {
                 </CardContent>
             </Card>
         </div>
-    )
+    );
 }
-
