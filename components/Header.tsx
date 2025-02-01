@@ -27,7 +27,7 @@ export default function Header() {
   }
 
   return (
-    <header className="bg-white shadow-md p-4 flex justify-between items-center">
+    <header className="bg-indigo shadow-md p-4 flex justify-between items-center size-auto">
       <div className="flex items-center">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
@@ -53,7 +53,7 @@ export default function Header() {
             </nav>
           </SheetContent>
         </Sheet>
-        <Link href="/" className="text-2xl font-bold text-blue-800 ml-4">
+        <Link href="/" className="text-2xl font-bold text-blue-900 ml-4">
           Doctor Dashboard
         </Link>
       </div>

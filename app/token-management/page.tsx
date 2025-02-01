@@ -1,57 +1,62 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Header from "@/components/Header"
-import { Button } from "@/components/ui/button"
-import { Play, Pause, CircleStopIcon as Stop, SkipForward } from "lucide-react"
-import { isNull } from "util"
+import { useState } from "react";
+import Header from "@/components/Header";
+import { Button } from "@/components/ui/button";
+import { Play, Pause, CircleStopIcon as Stop, SkipForward } from "lucide-react";
 
-export default function TokenManagementPage() {
-  const [isActive, setIsActive] = useState(false)
-  const [currentToken, setCurrentToken] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
+export default function DoctorInterface() {
+  const [isActive, setIsActive] = useState(false);
+  const [currentToken, setCurrentToken] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Mock patient details for the current token
   const [currentPatient, setCurrentPatient] = useState({
     name: "John Doe",
     appointmentTime: "10:30 AM",
     status: "In Progress",
-  })
+  });
+
+  // Mock appointments data
+  const [appointments, setAppointments] = useState([
+    { id: "1", patientName: "John Doe", time: "2023-10-25 10:00 AM", status: "pending" },
+    { id: "2", patientName: "Jane Smith", time: "2023-10-25 10:30 AM", status: "pending" },
+  ]);
 
   const handleStart = () => {
-    setIsActive(true)
-    setIsPaused(false)
+    setIsActive(true);
+    setIsPaused(false);
     // Reset patient details when starting
     setCurrentPatient({
       name: "John Doe",
       appointmentTime: "10:30 AM",
       status: "In Progress",
-    })
-  }
+    });
+  };
 
   const handleStop = () => {
-    setIsActive(false)
-    setCurrentToken(0)
-    setIsPaused(false)
+    setIsActive(false);
+    setCurrentToken(0);
+    setIsPaused(false);
     // Clear patient details when stopping
-    // setCurrentPatient(null)
-  }
+    setCurrentPatient(null);
+  };
 
   const handlePause = () => {
-    setIsPaused(!isPaused)
-  }
+    setIsPaused(!isPaused);
+  };
 
   const handleNextToken = () => {
     if (isActive && !isPaused) {
-      setCurrentToken(currentToken + 1)
+      setCurrentToken(currentToken + 1);
       // Update patient details for the next token (mock data)
       setCurrentPatient({
         name: "Jane Smith",
         appointmentTime: "11:00 AM",
         status: "In Progress",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -86,14 +91,14 @@ export default function TokenManagementPage() {
               <Button
                 onClick={handleStart}
                 disabled={isActive && !isPaused}
-                className="w-full h-24 rounded-2xl bg-gradient-to-br from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
+                className="w-full h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
               >
                 <Play size={24} /> Start
               </Button>
               <Button
                 onClick={handlePause}
                 disabled={!isActive}
-                className="w-full h-24 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
+                className="w-full h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
               >
                 {isPaused ? <Play size={24} /> : <Pause size={24} />}
                 {isPaused ? "Resume" : "Pause"}
@@ -104,7 +109,7 @@ export default function TokenManagementPage() {
               <Button
                 onClick={handleStop}
                 disabled={!isActive}
-                className="w-full h-24 rounded-2xl bg-gradient-to-br from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
+                className="w-full h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-2xl font-bold flex items-center justify-center gap-4 transform hover:scale-105 transition-transform duration-300"
               >
                 <Stop size={24} /> Stop
               </Button>
@@ -173,8 +178,38 @@ export default function TokenManagementPage() {
               </div>
             </div>
           )}
+
+          {/* Upcoming Appointments */}
+          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-lg mt-12">
+            <h2 className="text-3xl font-bold text-white mb-6">
+              Upcoming Appointments
+            </h2>
+            <ul className="space-y-4">
+              {appointments.map((appointment) => (
+                <li
+                  key={appointment.id}
+                  className="bg-white/20 rounded-2xl p-6 flex justify-between items-center"
+                >
+                  <div>
+                    <p className="text-lg font-medium text-white">
+                      Patient: {appointment.patientName}
+                    </p>
+                    <p className="text-lg text-white">
+                      Time: {appointment.time}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => handleNextToken()}
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-2xl"
+                  >
+                    Next Patient
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </main>
       </div>
     </div>
-  )
+  );
 }
