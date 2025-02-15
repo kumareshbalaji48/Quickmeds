@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const appointments = [
-  { id: 1, name: "John Doe", time: "10:00 AM", reason: "Annual checkup" },
-  { id: 2, name: "Jane Smith", time: "11:30 AM", reason: "Follow-up" },
-  { id: 3, name: "Bob Johnson", time: "2:00 PM", reason: "Consultation" },
+  { id: 1, name: "Kumaresh", time: "8:30 AM", status: "Pending" },
+  { id: 2, name: "Jane Smith", time: "11:30 AM", status: "Pending" },
+  { id: 3, name: "Bob Johnson", time: "2:00 PM", status: "Pending" },
   // Add more appointments as needed
 ]
 
@@ -20,7 +20,7 @@ export default function UpcomingAppointments() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">{appointment.reason}</p>
+            <p className="text-gray-600">{appointment.status}</p>
           </CardContent>
         </Card>
       ))}

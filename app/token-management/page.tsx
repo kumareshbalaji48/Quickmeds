@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 export default function DoctorInterface() {
   // Mock appointments data
   const [appointments, setAppointments] = useState([
-    { id: "1", patientName: "John Doe", time: "2023-10-25 10:00 AM", status: "pending" },
-    { id: "2", patientName: "Jane Smith", time: "2023-10-25 10:30 AM", status: "pending" },
+    { id: "1", patientName: "Kumaresh", time: "2024-02-01 8:30 AM", status: "pending" },
+    { id: "2", patientName: "Jane Smith", time: "2024-02-04 10:30 AM", status: "pending" },
   ]);
 
   return (
