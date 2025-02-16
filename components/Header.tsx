@@ -52,10 +52,16 @@ export default function Header() {
                   Profile
                 </Button>
               </Link>
-              <Link href="/newsletters" onClick={() => setIsOpen(false)}>
+              <Link href="/nutrition" onClick={() => setIsOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start text-lg">
                   <Newspaper className="mr-2 h-5 w-5" />
-                  Newsletters
+                  Nutrition Lookup
+                </Button>
+              </Link>
+              <Link href="/summarizer" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start text-lg">
+                  <Newspaper className="mr-2 h-5 w-5" />
+                  Summarizer
                 </Button>
               </Link>
             </nav>
@@ -76,7 +82,7 @@ export default function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => router.push("/profile")}>
+            <DropdownMenuItem onClick={() => router.push("/profile")}>            
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>
@@ -90,4 +96,3 @@ export default function Header() {
     </header>
   )
 }
-
