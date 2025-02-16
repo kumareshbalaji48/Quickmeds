@@ -50,7 +50,7 @@ const Process = ({ route }) => {
         }
 
         //backend url
-        const response = await axios.post("http://172.16.129.74:5000/api/healthcare/upload", formData, {
+        const response = await axios.post("http://192.168.43.1:5000/api/healthcare/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           timeout: 15000, 
         });

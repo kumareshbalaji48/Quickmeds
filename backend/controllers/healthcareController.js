@@ -168,15 +168,20 @@ const summarizeTextUsingGemini = async (structuredEntities) => {
   try {
     // Refined prompt for Gemini
     const prompt = `
-      The following are detailed medical entities extracted from a patient's document. Each entity includes its type, description, linked medical concepts, and confidence levels:
-      
-      ${structuredEntities}
+The following data contains key medical entities extracted from a patient’s document. Each entity includes its type, description, associated medical concepts, and confidence levels:
 
-      Based on the above details:
-      - Summarize this information in a simple, patient-friendly way.
-      - Explain all medical terms and concepts in layman's terms.
-      - Ensure the explanation is concise and empathetic, helping the patient understand their condition and treatment options better.
-      - Avoid technical jargon unless necessary, and provide brief explanations for any complex terms.
+Extracted Medical Entities:
+${structuredEntities}
+
+Task:
+Summarize the above medical details in a clear, patient-friendly manner.
+Explain all medical terms in simple language, ensuring that a non-medical person can understand their condition, symptoms, and treatment options.
+Present the summary in a well-structured, professional, and empathetic tone to help the patient grasp their health status effectively.
+Highlight critical findings and their implications while keeping the explanation concise yet comprehensive.
+Provide actionable insights or next steps where relevant, ensuring that the patient understands potential treatments, risks, or lifestyle adjustments.
+Avoid any formatting such as bold or special characters in the response. The output should be plain text and well-structured.
+Use bullet points for clarity and readability, making it easy for the patient to follow along.
+The goal is to transform complex medical information into an intuitive and engaging summary that impresses the reader with its clarity, coherence, and depth of analysis.
     `;
 
     // Initialize the Gemini model

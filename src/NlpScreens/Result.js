@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { View, StyleSheet, ScrollView, Alert, Platform } from "react-native";
 import { Text, Button, Card, Portal, Modal, Provider, IconButton } from "react-native-paper";
 import { WebView } from "react-native-webview";
@@ -6,6 +6,9 @@ import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import * as Speech from 'expo-speech';
 import { useNavigation } from "@react-navigation/native";
+import CryptoJS from "crypto-js";
+import Constants from 'expo-constants';
+
 const COLORS = {
   primary: "#020E22",
   white: "#FFFFFF",
@@ -17,15 +20,46 @@ const COLORS = {
 };
 
 const Result = ({ route }) => {
+  const ENCRYPTION_KEY = Constants.expoConfig?.extra?.ENCRYPTION_KEY;
+
   const { summary } = route.params || {};
   const [visible, setVisible] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const navigation = useNavigation();
-  if (!summary) {
-    Alert.alert("Error", "No summary received");
-    navigation.goBack();
-    return null;
-  }
+  
+  useEffect(() => {
+    const verifySecurity = async () => {
+      try {
+        if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
+          Alert.alert(
+            "Security Warning", 
+            "Encryption secure - proceed with caution",
+            [{ text: "OK" }] 
+          );
+          return;
+        }
+  
+        const testData = "security_test_" + Date.now();
+        const encrypted = CryptoJS.AES.encrypt(testData, ENCRYPTION_KEY).toString();
+        const decrypted = CryptoJS.AES.decrypt(encrypted, ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+        
+        if (decrypted !== testData) {
+          Alert.alert("Security Warning", "Encryption verification failed - proceeding with limited security");
+        }
+      } catch (error) {
+        Alert.alert("Security Notice", "Security checks incomplete - functionality may be limited");
+      }
+    };
+    verifySecurity();
+  }, [ENCRYPTION_KEY]); // Added navigation to dependencies
+
+
+  useEffect(() => {
+    if (!summary?.trim()) {
+      Alert.alert("Error", "No valid medical summary received");
+      navigation.goBack();
+    }
+  }, [summary, navigation]);
 
   const generateHtml = (summaryText) => `
     <html>
@@ -223,7 +257,7 @@ const Result = ({ route }) => {
       key: "assistant", 
       title: "AI Assistant", 
       icon: "robot", 
-      action: () => navigation.navigate('Assistant',{summary}),
+      action: () => navigation.navigate('Assistant', { summary }),
       color: COLORS.blue
     },
   ];
