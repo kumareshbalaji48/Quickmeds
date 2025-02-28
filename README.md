@@ -48,10 +48,10 @@ npx expo start
   - **Password**: 123456
 
 ### 📅 **Book Appointment**
-- **Status**: completed.
+- **Status**: ongoing.
 - **Details**:
   - The appointment feature requires the **user to be in the specified geolocation** to access it.
-  - The geolocation check is performed using **latitude and longitude** specified in `src/BookAppointment.js`.
+  - The geolocation check is performed using **latitude and longitude** using haversine formula specified in `src/BookAppointment.js`.
   - Ensure you **edit the hospital location** field in the code to reflect the correct coordinates.
   - This ensures a seamless booking experience while maintaining accuracy in **hospital-based location constraints**.
 
@@ -100,6 +100,7 @@ node app.js
 ---
 ## 📲 **Expo Development Build Setup**
 Since the application requires **advanced Expo libraries**, ensure your setup includes:
+- **Expo EAS services**: Setting up EAS credentials is required for the expo dev build .
 - **Expo Libraries Used**: `expo-speech`, `expo-share`, `expo-print`, `expo-location`, etc.
 - **Install EAS CLI**:
 ```sh
@@ -124,14 +125,14 @@ eas build -p android
 - **Firebase Free (Spark) Plan**: The project is currently limited in scalability due to the **Spark Plan**.
 - **Feature Completion Status**:
   - **Book Appointment**: Frontend complete; backend integration pending.
-  - **NLP Summarizer**: Cloud setup complete; backend nearing completion.
+  - **NLP Summarizer**: Cloud and query resolution chatbot setup complete , RAG chatbot is under development .
 
 ---
 ## 🌟 **Future Plans**
 - **Fully integrate** live appointment booking with dynamic thresholds for government hospitals is planned eith Doctor's web interface.
 - **Complete backend** implementation for all features.
 - **Upgrade to Firebase Blaze Plan** for enhanced scalability.
-- **Expand feature set** to include push notifications and analytics.
+- **Expand feature set** to include push notifications and analytics using firebase cloud messaging.
 
 ---
 ## 👥 **Community & Contributions**
