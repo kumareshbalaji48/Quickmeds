@@ -40,6 +40,8 @@ import { Buffer } from 'buffer';
 global.Buffer = Buffer;
 
 import process from 'process';
+import AppointmentsLandingpage from './src/AppointmentScreens/AppointmentsLandingpage.js';
+import PreBookAppointment from './src/AppointmentScreens/PreBookAppointment.js';
 
 global.process = process;
 
@@ -141,6 +143,10 @@ const App = () => {
             component={AppointmentConfirmation}
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="AppointmentsLandingpage" component={AppointmentsLandingpage} options={{headerShown: false}} />
+          <Stack.Screen name="PreBookAppointment" component={PreBookAppointment} options={{headerShown: false}} />
+
+
 
           <Stack.Screen name="Result" component={Result} options={{headerShown: false}} />
         </Stack.Navigator>

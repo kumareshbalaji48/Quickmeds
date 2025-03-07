@@ -68,7 +68,7 @@ const PhoneAuth = () => {
         .collection("users")
         .doc("phone")
         .collection(user.uid)
-        .doc("details") 
+        .doc("about") 
         .get();
   
       if (userDoc.exists) {

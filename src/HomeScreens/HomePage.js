@@ -186,7 +186,7 @@ export default function HomePage({ navigation }) {
       <View style={styles.cardContainer}>
         <TouchableOpacity
           style={[styles.card, { backgroundColor: COLORS.cardBlue }]}
-          onPress={() => navigation.navigate("BookAppointments")}
+          onPress={() => navigation.navigate("AppointmentsLandingpage")}
         >
           <Image
             source={require("../../assets/images/Homepage/appointment.png")}
